@@ -1,0 +1,9 @@
+https://draculatheme.com/gnome-terminal
+https://draculatheme.com/gtk
+https://draculatheme.com/vim
+
+# Remove gnome dock
+sudo apt remove gnome-shell-extension-ubuntu-dock
+
+# Gnome tweaks
+sudo apt install gnome-tweaks
