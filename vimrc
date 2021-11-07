@@ -37,3 +37,6 @@ autocmd FileType make setlocal noexpandtab
 packadd! dracula
 colorscheme dracula
 hi Normal guibg=NONE ctermbg=NONE
+
+" Install vim-gtk in order to copy to clipboard
+" "+y
