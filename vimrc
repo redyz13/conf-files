@@ -67,13 +67,17 @@ let g:lightline = {
       \ 'component': {
       \   'helloworld': 'redyz <3'
       \ },
-      \ }
+      \ 'enable': {
+      \   'tabline': 0
+      \ },
+      \}
 
 " Nerdtree configuration
 nnoremap <C-n> :NERDTree ~/<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 let NERDTreeShowHidden=1
+let NERDTreeQuitOnOpen=1
 
 " Keys
 " gt = next tab
