@@ -35,6 +35,9 @@ packadd! dracula
 colorscheme dracula
 hi Normal guibg=NONE ctermbg=NONE
 
+" Transparent vertical split bar
+"highlight VertSplit ctermbg=NONE ctermfg=NONE cterm=NONE
+
 " Install vim-gtk in order to copy to clipboard
 " "+y
 
