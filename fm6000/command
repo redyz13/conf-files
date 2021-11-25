@@ -1,9 +1,0 @@
-https://github.com/anhsirk0/fetch-master-6000
-
-# Custom command
-./.fm6000 -c blue -f .cat.txt
-
-# Files are located at home directory (both .cat.txt and .fm6000)
-# Just add line 3 into the file
-# ~/.config/fish/config.fish
-# for the autorun
