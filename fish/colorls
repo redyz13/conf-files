@@ -1,0 +1,5 @@
+https://github.com/athityakumar/colorls#installation
+
+# Installation (remember to use a patched font)
+sudo apt install ruby-dev
+sudo gem install colorls

@@ -15,3 +15,8 @@ omf install https://github.com/dracula/fish
 
 # Outside of fish set fish as default shell
 chsh -s /usr/bin/fish
+
+# Dracula theme for colorls
+git clone https://github.com/dracula/colorls
+cp dark_colors.yaml ~/.config/colorls/dark_colors.yaml # Create folder if needed
+
