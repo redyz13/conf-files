@@ -19,4 +19,3 @@ chsh -s /usr/bin/fish
 # Dracula theme for colorls
 git clone https://github.com/dracula/colorls
 cp dark_colors.yaml ~/.config/colorls/dark_colors.yaml # Create folder if needed
-

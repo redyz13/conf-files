@@ -72,5 +72,7 @@ function _is_git_dirty
   echo (command git status -s --ignore-submodules=dirty 2>/dev/null)
 end
 
-# Alias to use colorls by default
+# Custom alias
 alias ls='colorls'
+alias uni='cd ~/Documents/Workspace/uni'
+alias gitlogin='bash ~/Documents/Workspace/.git_init.sh'
