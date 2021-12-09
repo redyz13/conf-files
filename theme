@@ -19,3 +19,6 @@ https://extensions.gnome.org/
 
 # Change shell extension
 https://extensions.gnome.org/extension/19/user-themes/
+
+# Remove terminal title bar (Disable show window titles from tiling manager)
+gsettings set org.gnome.Terminal.Legacy.Settings headerbar false
