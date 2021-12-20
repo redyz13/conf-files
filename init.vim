@@ -18,7 +18,7 @@ set nobackup
 set undodir=~/.config/nvim/undodir
 set undofile
 
-let mapleader = ","
+let mapleader = " "
 
 inoremap " ""<left>
 inoremap ' ''<left>
