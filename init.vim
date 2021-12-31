@@ -12,11 +12,15 @@ set number
 set background=dark
 set relativenumber
 set scrolloff=8
+set splitright
 
 set noswapfile
 set nobackup
 set undodir=~/.config/nvim/undodir
 set undofile
+
+" Set working directory to current file automatically
+set autochdir
 
 let mapleader = " "
 
@@ -95,6 +99,8 @@ nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+nnoremap <leader>fo <cmd>Telescope oldfiles<cr>
+nnoremap <leader>fi <cmd>Telescope file_browser<cr>
 
 " Using Lua functions
 "nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
