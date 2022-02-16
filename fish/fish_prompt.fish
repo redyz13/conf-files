@@ -72,7 +72,15 @@ function _is_git_dirty
   echo (command git status -s --ignore-submodules=dirty 2>/dev/null)
 end
 
-# Custom alias
+# Custom alias 
 alias ls='colorls'
-alias uni='cd ~/Documents/Workspace/uni'
 alias gitlogin='bash ~/Documents/Workspace/.git_init.sh'
+alias vim='nvim'
+
+# Apt aliases
+alias aptup='sudo apt update && sudo apt upgrade'
+alias aptupd='sudo apt update'
+alias aptupg='sudo apt upgrade'
+alias aptins='sudo apt install'
+alias aptrmv='sudo apt remove'
+alias aptpur='sudo apt purge'
