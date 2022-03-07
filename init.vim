@@ -50,6 +50,7 @@ call plug#begin()
     Plug 'ryanoasis/vim-devicons' " Requires a supported font
     Plug 'Xuyuanp/nerdtree-git-plugin'
     Plug 'tpope/vim-fugitive'
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 call plug#end()
 
 " Color scheme
@@ -113,3 +114,24 @@ nnoremap <leader>fi <cmd>Telescope file_browser<cr>
 "nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
 "nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
 "nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
+
+" Treesitter configurationon
+" :TSInstall <language_to_install> (C is installed)
+" :TSUpdate to update
+
+lua << EOF
+require'nvim-treesitter.configs'.setup {
+    highlight = {
+        enable = true,
+        -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+        -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+        -- Using this option may slow down your editor, and you may see some duplicate highlights.
+        -- Instead of true it can also be a list of languages
+        additional_vim_regex_highlighting = false,
+    },
+
+    indent = {
+        enable = true
+    }
+}
+EOF
