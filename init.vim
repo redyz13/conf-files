@@ -24,19 +24,14 @@ set autochdir
 
 let mapleader = " "
 
-inoremap " ""<left>
-inoremap ' ''<left>
-inoremap ( ()<left>
-inoremap [ []<left>
-inoremap { {}<left>
-inoremap {<CR> {<CR>}<ESC>O
-inoremap {;<CR> {<CR>};<ESC>O
-
 " Disable expandtab for Makefiles
 autocmd FileType make setlocal noexpandtab
 
 " Disable line numbers in terminal mode
 autocmd TermOpen * setlocal nonumber norelativenumber
+
+" Open terminal shortcut
+nnoremap <leader>tt :term<CR>
 
 " Exit insert mode in terminal with Esc key
 tnoremap <Esc> <C-\><C-N>
@@ -51,6 +46,7 @@ call plug#begin()
     Plug 'Xuyuanp/nerdtree-git-plugin'
     Plug 'tpope/vim-fugitive'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    Plug 'jiangmiao/auto-pairs'
 call plug#end()
 
 " Color scheme
