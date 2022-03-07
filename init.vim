@@ -35,6 +35,12 @@ inoremap {;<CR> {<CR>};<ESC>O
 " Disable expandtab for Makefiles
 autocmd FileType make setlocal noexpandtab
 
+" Disable line numbers in terminal mode
+autocmd TermOpen * setlocal nonumber norelativenumber
+
+" Exit insert mode in terminal with Esc key
+tnoremap <Esc> <C-\><C-N>
+
 " Plugins
 call plug#begin()
     Plug 'nvim-lua/plenary.nvim'
