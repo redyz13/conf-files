@@ -47,7 +47,6 @@ call plug#begin()
     Plug 'tpope/vim-fugitive'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'jiangmiao/auto-pairs'
-    Plug 'psliwka/vim-smoothie'
 call plug#end()
 
 " Color scheme
