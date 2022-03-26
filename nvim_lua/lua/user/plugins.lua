@@ -41,7 +41,8 @@ packer.init {
 return packer.startup(function(use)
 -- Plugins
     use "wbthomason/packer.nvim" -- Packer manage itself
-    use "nvim-lua/plenary.nvim"
+    use "nvim-lua/popup.nvim" -- An implementation of the Popup API from vim in Neovim
+    use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
     use "windwp/nvim-autopairs" -- Autopairs, integrates with both cmp and treesitter
 
     -- Colorscheme
@@ -59,6 +60,12 @@ return packer.startup(function(use)
     use "L3MON4D3/LuaSnip" -- Engine
     use "rafamadriz/friendly-snippets" -- Some snippets to use
 
+    -- Lsp
+    use "neovim/nvim-lspconfig" -- Enable LSP
+    use "williamboman/nvim-lsp-installer" -- Simple to use language server installer
+    use "tamago324/nlsp-settings.nvim" -- Language server settings defined in json for
+    use "jose-elias-alvarez/null-ls.nvim" -- For formatters and linters
+
     -- Telescope
     use "nvim-telescope/telescope.nvim"
 
@@ -67,6 +74,8 @@ return packer.startup(function(use)
         "nvim-treesitter/nvim-treesitter",
         run = ":TSUpdate",
     }
+
+    use "JoosepAlviste/nvim-ts-context-commentstring"
 
     -- End of plugins
     if PACKER_BOOTSTRAP then
