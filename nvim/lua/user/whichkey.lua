@@ -92,10 +92,10 @@ local mappings = {
     "<cmd>lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown{previewer = false})<cr>",
     "Find files",
   },
-  --["ff"] = {
-  --  "<cmd>lua require('telescope.builtin').find_files()<cr>",
-  --  "Find files",
-  --},
+  ["ff"] = {
+    "<cmd>lua require('telescope.builtin').find_files()<cr>",
+    "Find files",
+  },
   ["fg"] = {
     "<cmd>lua require('telescope.builtin').live_grep()<cr>",
     "Live grep",
@@ -196,13 +196,7 @@ local mappings = {
 
   t = {
     name = "Terminal",
-    n = { "<cmd>lua _NODE_TOGGLE()<cr>", "Node" },
-    u = { "<cmd>lua _NCDU_TOGGLE()<cr>", "NCDU" },
-    t = { "<cmd>lua _HTOP_TOGGLE()<cr>", "Htop" },
-    p = { "<cmd>lua _PYTHON_TOGGLE()<cr>", "Python" },
-    f = { "<cmd>ToggleTerm direction=float<cr>", "Float" },
-    h = { "<cmd>ToggleTerm size=10 direction=horizontal<cr>", "Horizontal" },
-    v = { "<cmd>ToggleTerm size=80 direction=vertical<cr>", "Vertical" },
+    t = {"<leader>tt :term<cr>", "Open terminal"},
   },
 }
 
