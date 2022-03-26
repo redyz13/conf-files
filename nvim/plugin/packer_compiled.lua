@@ -84,11 +84,6 @@ _G.packer_plugins = {
     path = "/home/axel/.local/share/nvim/site/pack/packer/start/LuaSnip",
     url = "https://github.com/L3MON4D3/LuaSnip"
   },
-  ["alpha-nvim"] = {
-    loaded = true,
-    path = "/home/axel/.local/share/nvim/site/pack/packer/start/alpha-nvim",
-    url = "https://github.com/goolord/alpha-nvim"
-  },
   ["bufferline.nvim"] = {
     loaded = true,
     path = "/home/axel/.local/share/nvim/site/pack/packer/start/bufferline.nvim",
@@ -218,11 +213,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/axel/.local/share/nvim/site/pack/packer/start/popup.nvim",
     url = "https://github.com/nvim-lua/popup.nvim"
-  },
-  ["project.nvim"] = {
-    loaded = true,
-    path = "/home/axel/.local/share/nvim/site/pack/packer/start/project.nvim",
-    url = "https://github.com/ahmedkhalf/project.nvim"
   },
   ["telescope.nvim"] = {
     loaded = true,
