@@ -141,3 +141,7 @@ alias aptpur='sudo apt purge'
 
 # Path to z
 . $HOME/.zpath/z.sh
+
+# Cat
+export PATH=$PATH:$HOME/.cpath
+fm6000 -c blue -f ~/.cpath/cat.txt
