@@ -128,6 +128,9 @@ bind 'set bell-style none'
 alias vim='nvim'
 alias ..='cd ..'
 
+# Colorls
+alias ls='colorls'
+
 # Apt aliases
 alias aptup='sudo apt update && sudo apt upgrade'
 alias aptupd='sudo apt update'
