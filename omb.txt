@@ -1,0 +1,2 @@
+# Disable full path print after cd into a directory
+Comment the line CDPATH="." in ~/.oh-my-bash/lib/shopt.sh
