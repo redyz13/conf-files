@@ -48,6 +48,7 @@ call plug#end()
 
 " Color scheme
 hi Normal guibg=NONE ctermbg=NONE
+highlight LineNr ctermfg=grey
 
 " Transparent vertical split bar
 highlight VertSplit ctermbg=NONE ctermfg=NONE cterm=NONE
@@ -144,6 +145,3 @@ xnoremap <silent> <C-/> :call Comment()<CR>
 nnoremap <silent> <C-/> :call Comment()<CR>
 
 nnoremap <silent> <C-w>_ :<C-u>call VSCodeNotify('workbench.action.toggleEditorWidths')<CR>
-
-nnoremap <silent> <Space> :call VSCodeNotify('whichkey.show')<CR>
-xnoremap <silent> <Space> :call VSCodeNotify('whichkey.show')<CR>
