@@ -18,9 +18,9 @@
     "editor.lineNumbers": "relative",
     "gitlens.hovers.currentLine.over": "line",
     "terminal.integrated.fontSize": 16,
-    "editor.minimap.enabled": false,
     "gitlens.codeLens.enabled": false,
     "gitlens.currentLine.enabled": false,
+    "telemetry.telemetryLevel": "off",
     "[c]": {
         "editor.defaultFormatter": "ms-vscode.cpptools"
     },
@@ -41,4 +41,5 @@
             "password": "{{put-password-here}}"
         }
     ],
+    "workbench.activityBar.visible": false,
 }
