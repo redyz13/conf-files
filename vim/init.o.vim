@@ -36,35 +36,44 @@ nnoremap <leader>tt :term<CR>
 " Exit insert mode in terminal with Esc key
 tnoremap <Esc> <C-\><C-N>
 
-" Clipboard access
-set clipboard+=unnamedplus
-
 " Plugins
 call plug#begin()
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-telescope/telescope.nvim'
     Plug 'itchyny/lightline.vim'
+    Plug 'preservim/nerdtree'
+    Plug 'ryanoasis/vim-devicons' " Requires a supported font
+    Plug 'Xuyuanp/nerdtree-git-plugin'
+    Plug 'tpope/vim-fugitive'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'jiangmiao/auto-pairs'
-    Plug 'numToStr/Comment.nvim'
-    Plug 'https://gitlab.com/__tpb/monokai-pro.nvim'
 call plug#end()
 
 " Color scheme
-colorscheme monokaipro
+packadd! dracula
+colorscheme dracula
 hi Normal guibg=NONE ctermbg=NONE
-highlight LineNr ctermfg=grey
 
 " Transparent vertical split bar
 highlight VertSplit ctermbg=NONE ctermfg=NONE cterm=NONE
 
-" Comment
-lua require('Comment').setup()
+" Install vim-gtk in order to copy to clipboard
+" "+y
+
+" Only if you're using tmux 
+if &term =~ "tmux"                                                   
+    let &t_BE = "\e[?2004h"                                              
+    let &t_BD = "\e[?2004l"                                              
+    exec "set t_PS=\e[200~"                                              
+    exec "set t_PE=\e[201~"                                              
+endif
 
 " Lightline configuration
 set laststatus=2
 set noshowmode
 
 let g:lightline = {
-      \ 'colorscheme': 'one',
+      \ 'colorscheme': 'darcula',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'readonly', 'filename', 'modified', 'helloworld' ] ]
@@ -76,6 +85,31 @@ let g:lightline = {
       \   'tabline': 0
       \ },
       \}
+
+" Nerdtree configuration
+nnoremap <C-n> :NERDTree ~/<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
+let NERDTreeShowHidden=1
+let NERDTreeQuitOnOpen=1
+
+" Telescope config
+
+" Find files using Telescope command-line sugar.
+"nnoremap <leader>ff <cmd>Telescope find_files<cr>
+"nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+"nnoremap <leader>fb <cmd>Telescope buffers<cr>
+"nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+"nnoremap <leader>fo <cmd>Telescope oldfiles<cr>
+"nnoremap <leader>fi <cmd>Telescope file_browser<cr>
+
+" Using Lua functions
+nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
+nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
+nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
+nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
+nnoremap <leader>fo <cmd>lua require('telescope.builtin').oldfiles()<cr>
+nnoremap <leader>fi <cmd>lua require('telescope.builtin').file_browser()<cr>
 
 " Treesitter configurationon
 " :TSInstall <language_to_install> (C is installed)
