@@ -45,11 +45,12 @@ call plug#begin()
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'jiangmiao/auto-pairs'
     Plug 'numToStr/Comment.nvim'
-    Plug 'https://gitlab.com/__tpb/monokai-pro.nvim'
+    " Plug 'https://gitlab.com/__tpb/monokai-pro.nvim'
+    Plug 'olimorris/onedarkpro.nvim'
 call plug#end()
 
 " Color scheme
-colorscheme monokaipro
+colorscheme onedarkpro
 hi Normal guibg=NONE ctermbg=NONE
 highlight LineNr ctermfg=grey
 
