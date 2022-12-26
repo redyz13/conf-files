@@ -127,6 +127,8 @@ bind 'set bell-style none'
 # Aliases
 alias vim='nvim'
 alias ..='cd ..'
+alias acp='git add --all && git commit && git push'
+alias mysql='mysql -u root -p'
 
 # Colorls
 alias ls='colorls'
@@ -145,3 +147,8 @@ alias aptpur='sudo apt purge'
 # Cat
 export PATH=$PATH:$HOME/.cpath
 fm6000 -c blue -f ~/.cpath/cat.txt
+
+# Java
+export PATH=$PATH:$HOME/Tools/jdk-19/bin
+export PATH=$PATH:$HOME/Tools/apache-maven-3.8.6/bin
+export CLASSPATH=$CLASSPATH:~/Tools/mysql-connector-j-8.0.31.jar
