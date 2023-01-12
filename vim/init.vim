@@ -37,7 +37,7 @@ nnoremap <leader>tt :term<CR>
 tnoremap <Esc> <C-\><C-N>
 
 " Clipboard access
-set clipboard+=unnamedplus
+" set clipboard+=unnamedplus
 
 " Plugins
 call plug#begin()
@@ -50,7 +50,7 @@ call plug#begin()
 call plug#end()
 
 " Color scheme
-colorscheme onedarkpro
+colorscheme onedark
 hi Normal guibg=NONE ctermbg=NONE
 highlight LineNr ctermfg=grey
 
