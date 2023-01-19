@@ -52,10 +52,15 @@ call plug#end()
 " Color scheme
 colorscheme onedark
 hi Normal guibg=NONE ctermbg=NONE
-highlight LineNr ctermfg=grey
+highlight LineNr guibg=#161719
+highlight VertSplit ctermbg=NONE ctermfg=NONE cterm=NONE
+set cursorline
+highlight CursorLine guibg=NONE
+highlight CursorLineNr guibg=#161719
+highlight CursorLineNr guifg=#EFD961
 
 " Transparent vertical split bar
-highlight VertSplit ctermbg=NONE ctermfg=NONE cterm=NONE
+" highlight VertSplit ctermbg=NONE ctermfg=NONE cterm=NONE
 
 " Comment
 lua require('Comment').setup()
