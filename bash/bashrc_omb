@@ -149,6 +149,9 @@ export PATH=$PATH:$HOME/.cpath
 fm6000 -c blue -f ~/.cpath/cat.txt
 
 # Java
-export PATH=$PATH:$HOME/Tools/jdk-19.0.1/bin
-export PATH=$PATH:$HOME/Tools/apache-maven-3.8.7/bin
+export PATH=$PATH:$HOME/Tools/jdk-19/bin
 export CLASSPATH=$CLASSPATH:~/Tools/mysql-connector-j-8.0.31.jar
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
