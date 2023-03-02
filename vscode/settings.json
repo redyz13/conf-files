@@ -1,0 +1,85 @@
+{
+  // --- Basic config ---
+  "editor.fontSize": 18,
+  "files.exclude": {
+    "**/__pycache__/": true,
+    "**/._.ini*": true,
+    "**/*.o": true
+  },
+  "explorer.confirmDelete": false,
+  "editor.fontFamily": "CaskaydiaCove Nerd Font",
+  "editor.fontLigatures": true,
+  "workbench.editor.highlightModifiedTabs": true,
+  "explorer.confirmDragAndDrop": false,
+  "workbench.startupEditor": "newUntitledFile",
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "editor.suggestSelection": "first",
+  "workbench.colorTheme": "Monokai Pro (Filter Spectrum)",
+  "workbench.iconTheme": "Monokai Pro (Filter Spectrum) Icons",
+  "editor.lineNumbers": "relative",
+  "terminal.integrated.fontSize": 14,
+  "C_Cpp.default.cppStandard": "c++17",
+  "telemetry.telemetryLevel": "off",
+  // --------------------
+
+  // --- Discord config ---
+  "discord.detailsEditing": "<3",
+  "discord.detailsIdling": "<3",
+  "discord.largeImageIdling": "<3",
+  "discord.largeImage": "<3",
+  "discord.smallImage": "redyz",
+  "discord.removeRemoteRepository": true,
+  "discord.lowerDetailsEditing": "<3",
+  // --------------------
+
+  // --- Pets ---
+  "vscode-pets.position": "explorer",
+  "vscode-pets.theme": "forest",
+  "vscode-pets.petSize": "medium",
+  // --------------------
+
+  // --- Vim ---
+  "vim.handleKeys": {
+    "<S-k>": false,
+    "<C-n>": false
+  },
+  // --------------------
+
+  // --- Git lens ---
+  "gitlens.hovers.currentLine.over": "line",
+  "gitlens.codeLens.enabled": false,
+  "gitlens.currentLine.enabled": false,
+  // --------------------
+
+  // --- Default formatter ---
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.indentSize": "tabSize"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.indentSize": "tabSize"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.indentSize": "tabSize"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.indentSize": "tabSize"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.indentSize": "tabSize"
+  }
+}
