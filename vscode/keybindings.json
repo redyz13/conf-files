@@ -171,5 +171,9 @@
   {
     "key": "ctrl+alt+b",
     "command": "workbench.action.toggleActivityBarVisibility"
+  },
+  {
+    "key": "shift+oem_7",
+    "command": "editor.action.showHover"
   }
 ]
