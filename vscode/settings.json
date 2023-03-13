@@ -7,8 +7,6 @@
     "**/*.o": true
   },
   "explorer.confirmDelete": false,
-  "editor.fontFamily": "CaskaydiaCove Nerd Font",
-  "editor.fontLigatures": true,
   "workbench.editor.highlightModifiedTabs": true,
   "explorer.confirmDragAndDrop": false,
   "workbench.startupEditor": "newUntitledFile",
@@ -20,6 +18,15 @@
   "terminal.integrated.fontSize": 14,
   "C_Cpp.default.cppStandard": "c++17",
   "telemetry.telemetryLevel": "off",
+  // --------------------
+
+  // --- Font ---
+  // "editor.fontFamily": "CaskaydiaCove Nerd Font",
+  // "editor.fontFamily": "MonoLisa Nerd Font Medium",
+  "editor.fontFamily": "Cascadia Mono PL",
+  "terminal.integrated.fontFamily": "CaskaydiaCove Nerd Font",
+  // "editor.fontLigatures": true,
+  "editor.fontLigatures": "'calt', 'ss01'",
   // --------------------
 
   // --- Discord config ---
@@ -81,5 +88,8 @@
     "editor.formatOnSave": true,
     "editor.tabSize": 2,
     "editor.indentSize": "tabSize"
-  }
+  },
+  // --------------------
+
+  "workbench.activityBar.visible": false
 }
