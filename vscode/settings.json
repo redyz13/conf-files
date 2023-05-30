@@ -4,7 +4,8 @@
   "files.exclude": {
     "**/__pycache__/": true,
     "**/._.ini*": true,
-    "**/*.o": true
+    "**/*.o": true,
+    "**/.vscode/": true
   },
   "explorer.confirmDelete": false,
   "workbench.editor.highlightModifiedTabs": true,
@@ -72,8 +73,8 @@
     "editor.indentSize": "tabSize"
   },
   "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "vscode.html-language-features",
+    // "editor.formatOnSave": true,
     "editor.tabSize": 2,
     "editor.indentSize": "tabSize"
   },
@@ -89,6 +90,10 @@
     "editor.tabSize": 2,
     "editor.indentSize": "tabSize"
   },
+
+  // --- Latex ---
+  "latex-workshop.latex.outDir": "%DIR%/out",
+  "ltex.language": "it",
   // --------------------
 
   "workbench.activityBar.visible": false
