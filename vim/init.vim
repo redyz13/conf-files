@@ -42,7 +42,7 @@ tnoremap <Esc> <C-\><C-N>
 " Plugins
 call plug#begin()
     Plug 'itchyny/lightline.vim'
-    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    Plug 'nvim-treesitter/nvim-treesitter'
     Plug 'jiangmiao/auto-pairs'
     Plug 'numToStr/Comment.nvim'
     " Plug 'https://gitlab.com/__tpb/monokai-pro.nvim'
