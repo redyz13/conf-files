@@ -1,4 +1,41 @@
-# name: sashimi
+if status is-interactive
+    # Commands to run in interactive sessions can go here
+end
+
+# Remove greeting
+set -g fish_greeting
+
+# Set vi mode
+# fish_vi_key_bindings
+
+bind -k npage 'commandline -a \~; commandline -f forward-char'
+
+# Aliases
+alias vim='nvim'
+alias ..='cd ..'
+alias acp='git add --all && git commit && git push'
+alias mysql='sudo mysql -p'
+
+# Colorls
+alias ls='colorls'
+
+# Apt aliases
+alias aptup='sudo apt update && sudo apt upgrade'
+alias aptupd='sudo apt update'
+alias aptupg='sudo apt upgrade'
+alias aptins='sudo apt install'
+alias aptrmv='sudo apt remove'
+alias aptpur='sudo apt purge'
+
+# Cat
+fish_add_path $HOME/.cpath
+fm6000 -c magenta -f ~/.cpath/cat.txt
+
+# Java
+fish_add_path PATH=$PATH:$HOME/Tools/jdk-19/bin
+fish_add_path CLASSPATH=$CLASSPATH:~/Tools/mysql-connector-j-8.0.31.jar
+
+# Sashimi
 function fish_prompt
   set -l last_status $status
   set -l cyan (set_color -o cyan)
@@ -71,16 +108,3 @@ end
 function _is_git_dirty
   echo (command git status -s --ignore-submodules=dirty 2>/dev/null)
 end
-
-# Custom alias 
-alias ls='colorls'
-alias gitlogin='bash ~/Documents/Workspace/.git_init.sh'
-alias vim='nvim'
-
-# Apt aliases
-alias aptup='sudo apt update && sudo apt upgrade'
-alias aptupd='sudo apt update'
-alias aptupg='sudo apt upgrade'
-alias aptins='sudo apt install'
-alias aptrmv='sudo apt remove'
-alias aptpur='sudo apt purge'

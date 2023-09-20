@@ -28,3 +28,13 @@ fisher install jethrokuan/z
 sudo apt-add-repository ppa:fish-shell/release-3
 sudo apt update
 sudo apt install fish
+
+# Fisher
+curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
+
+# Catppuccin
+fisher install catppuccin/fish
+fish_config theme save "Catppuccin Mocha"
+
+# Sashimi (set into config.fish)
+fisher install isacikgoz/sashimi
