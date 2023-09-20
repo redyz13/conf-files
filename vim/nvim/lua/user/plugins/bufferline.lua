@@ -6,6 +6,7 @@ return {
   config = function()
     require("bufferline").setup{
       options = {
+        color_icons = true,
         numbers = "none", -- | "ordinal" | "buffer_id" | "both" | function({ ordinal, id, lower, raise }): string,
         close_command = "Bdelete! %d", -- can be a string | function, see "Mouse actions"
         right_mouse_command = "Bdelete! %d", -- can be a string | function, see "Mouse actions"
@@ -56,7 +57,10 @@ return {
         --     return true
         --   end
         -- end,
-        offsets = { { filetype = "NvimTree", text = "", padding = 0 } },
+
+        -- TODO vim . error
+        offsets = { { filetype = "NvimTree", text = "File Explorer", padding = 0 } },
+
         show_buffer_icons = true,
         show_buffer_close_icons = true,
         show_close_icon = true,
@@ -76,6 +80,7 @@ return {
         fill = {
           guifg = { attribute = "fg", highlight = "TabLine" },
           guibg = { attribute = "bg", highlight = "TabLine" },
+          bg = '#1e1e2e', -- Change based on theme,
         },
         background = {
           guifg = { attribute = "fg", highlight = "TabLine" },
@@ -151,10 +156,12 @@ return {
         separator = {
           guifg = { attribute = "bg", highlight = "TabLine" },
           guibg = { attribute = "bg", highlight = "TabLine" },
+          fg = '#1e1e2e', -- Change based on theme,
         },
         separator_selected = {
           guifg = { attribute = "bg", highlight = "Normal" },
           guibg = { attribute = "bg", highlight = "Normal" },
+          fg = '#1e1e2e', -- Change based on theme,
         },
         -- separator_visible = {
         --   guifg = {attribute='bg',highlight='TabLine'},
