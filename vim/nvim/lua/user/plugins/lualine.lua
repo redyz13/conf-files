@@ -5,7 +5,6 @@ return {
     local lualine = require("lualine")
     local lazy_status = require("lazy.status") -- To configure lazy pending updates count
 
-    
     local hide_in_width = function()
       return vim.fn.winwidth(0) > 80
     end

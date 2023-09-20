@@ -3,24 +3,24 @@ return {
   dependencies = { 'nvim-lua/plenary.nvim' },
   name = "telescope",
   config = function()
-    vim.keymap.set("n", "<leader>f","<cmd>lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown{previewer = false})<cr>") 
-    vim.keymap.set("n", "<leader>fg","<cmd>lua require('telescope.builtin').git_files(require('telescope.themes').get_dropdown{previewer = false})<cr>") 
-    vim.keymap.set("n", "<leader>ff","<cmd>lua require('telescope.builtin').find_files()<cr>") 
-    vim.keymap.set("n", "<leader>fb","<cmd>lua require('telescope.builtin').buffers()<cr>") 
-    vim.keymap.set("n", "<leader>fh","<cmd>lua require('telescope.builtin').help_tags()<cr>") 
-    vim.keymap.set("n", "<leader>fo","<cmd>lua require('telescope.builtin').oldfiles()<cr>") 
-    vim.keymap.set("n", "<leader>fs","<cmd>lua require('telescope.builtin').grep_string()<cr>") 
-    vim.keymap.set("n", "<leader>b","<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<cr>") 
-    vim.keymap.set("n", "<leader>F","<cmd>Telescope live_grep theme=ivy<cr>") 
-    vim.keymap.set("n", "<leader>P","<cmd>lua require('telescope').extensions.projects.projects()<cr>") 
+    vim.keymap.set("n", "<leader>f","<cmd>lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown{previewer = false})<cr>")
+    vim.keymap.set("n", "<leader>fg","<cmd>lua require('telescope.builtin').git_files(require('telescope.themes').get_dropdown{previewer = false})<cr>")
+    vim.keymap.set("n", "<leader>ff","<cmd>lua require('telescope.builtin').find_files()<cr>")
+    vim.keymap.set("n", "<leader>fb","<cmd>lua require('telescope.builtin').buffers()<cr>")
+    vim.keymap.set("n", "<leader>fh","<cmd>lua require('telescope.builtin').help_tags()<cr>")
+    vim.keymap.set("n", "<leader>fo","<cmd>lua require('telescope.builtin').oldfiles()<cr>")
+    vim.keymap.set("n", "<leader>fs","<cmd>lua require('telescope.builtin').grep_string()<cr>")
+    vim.keymap.set("n", "<leader>b","<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<cr>")
+    vim.keymap.set("n", "<leader>F","<cmd>Telescope live_grep theme=ivy<cr>")
+    vim.keymap.set("n", "<leader>P","<cmd>lua require('telescope').extensions.projects.projects()<cr>")
 
-    actions = require("telescope.actions")
+    local actions = require("telescope.actions")
 
     require("telescope").setup({
 
       defaults = {
         prompt_prefix = " ",
-        selection_caret = " ",
+        -- selection_caret = " ",
         path_display = { "smart" },
 
         mappings = {
