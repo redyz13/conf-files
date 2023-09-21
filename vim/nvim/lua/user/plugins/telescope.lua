@@ -1,15 +1,19 @@
 return {
   'nvim-telescope/telescope.nvim', tag = '0.1.3',
-  dependencies = { 'nvim-lua/plenary.nvim' },
+  dependencies = {
+    'nvim-lua/plenary.nvim',
+    'nvim-telescope/telescope-file-browser.nvim',
+  },
   name = "telescope",
   config = function()
-    vim.keymap.set("n", "<leader>f","<cmd>lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown{previewer = false})<cr>")
+    vim.keymap.set("n", "<leader>ff","<cmd>lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown{previewer = false})<cr>")
     vim.keymap.set("n", "<leader>fg","<cmd>lua require('telescope.builtin').git_files(require('telescope.themes').get_dropdown{previewer = false})<cr>")
-    vim.keymap.set("n", "<leader>ff","<cmd>lua require('telescope.builtin').find_files()<cr>")
-    vim.keymap.set("n", "<leader>fb","<cmd>lua require('telescope.builtin').buffers()<cr>")
+    vim.keymap.set("n", "<leader>f","<cmd>lua require('telescope.builtin').find_files()<cr>")
+    -- vim.keymap.set("n", "<leader>fb","<cmd>lua require('telescope.builtin').buffers()<cr>")
     vim.keymap.set("n", "<leader>fh","<cmd>lua require('telescope.builtin').help_tags()<cr>")
     vim.keymap.set("n", "<leader>fo","<cmd>lua require('telescope.builtin').oldfiles()<cr>")
     vim.keymap.set("n", "<leader>fs","<cmd>lua require('telescope.builtin').grep_string()<cr>")
+    vim.keymap.set("n", "<leader>fb","<cmd>lua require('telescope').extensions.file_browser.file_browser(require('telescope.themes').get_dropdown{previewer = false})<cr>")
     vim.keymap.set("n", "<leader>b","<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<cr>")
     vim.keymap.set("n", "<leader>F","<cmd>Telescope live_grep theme=ivy<cr>")
     vim.keymap.set("n", "<leader>P","<cmd>lua require('telescope').extensions.projects.projects()<cr>")
@@ -99,11 +103,15 @@ return {
       },
       extensions = {
         -- Your extension configuration goes here:
-        -- extension_name = {
-        --   extension_config_key = value,
-        -- }
+        file_browser = {
+          theme = "ivy",
+          hijack_netrw = true,
+        }
         -- please take a look at the readme of the extension you want to configure
       },
+
+      require("telescope").load_extension "file_browser"
+
     })
   end
 }

@@ -47,7 +47,7 @@ return {
       diagnostics = {
         enable = true,
         icons = {
-          hint = "",
+          hint = "󰌵",
           info = "",
           warning = "",
           error = "",
@@ -88,6 +88,7 @@ return {
       },
     })
 
+    -- TODO
     vim.keymap.set("n", "<leader>e", "<Cmd>NvimTreeToggle<CR>")
   end,
 }
