@@ -5,9 +5,16 @@ end
 # Remove greeting
 set -g fish_greeting
 
+# Load tmux
+if status is-interactive
+and not set -q TMUX
+    exec tmux new-session -A -s "<3"
+end
+
 # Set vi mode
 # fish_vi_key_bindings
 
+# Tilde key
 bind -k npage 'commandline -a \~; commandline -f forward-char'
 
 # Aliases
