@@ -62,7 +62,7 @@ return {
         -- end,
 
         -- TODO vim . error
-        offsets = { { filetype = "NvimTree", text = "File Explorer", padding = 0 } },
+        offsets = { { filetype = "NvimTree", text = "File Browser", padding = 0 } },
 
         show_buffer_icons = true,
         show_buffer_close_icons = true,
@@ -73,13 +73,13 @@ return {
         -- [focused and unfocused]. eg: { '|', '|' }
         separator_style = "thin", -- | "thick" | "thin" | { 'any', 'any' },
         enforce_regular_tabs = true,
-        always_show_bufferline = true,
+        always_show_bufferline = false,
         -- sort_by = 'id' | 'extension' | 'relative_directory' | 'directory' | 'tabs' | function(buffer_a, buffer_b)
         --   -- add custom logic
         --   return buffer_a.modified > buffer_b.modified
         -- end
       },
-    --   highlights = {
+      -- highlights = {
     --     fill = {
     --       guifg = { attribute = "fg", highlight = "TabLine" },
     --       guibg = { attribute = "bg", highlight = "TabLine" },
@@ -177,7 +177,7 @@ return {
     --       guifg = { attribute = "fg", highlight = "LspDiagnosticsDefaultHint" },
     --       guibg = { attribute = "bg", highlight = "Normal" },
     --     },
-    --   },
+      -- },
     }
   end
 }

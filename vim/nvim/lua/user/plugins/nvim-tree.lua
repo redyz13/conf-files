@@ -39,7 +39,6 @@ return {
       update_cwd = true,
       view = {
         width = 30,
-        hide_root_folder = false,
         side = "left",
         number = false,
         relativenumber = false,
@@ -64,6 +63,7 @@ return {
         timeout = 500,
       },
       renderer = {
+        root_folder_label = false,
         indent_markers = {
           enable = true
         },

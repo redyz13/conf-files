@@ -3,7 +3,6 @@ return {
   dependencies = { "nvim-tree/nvim-web-devicons" },
   config = function()
     local lualine = require("lualine")
-    local lazy_status = require("lazy.status") -- To configure lazy pending updates count
 
     local hide_in_width = function()
       return vim.fn.winwidth(0) > 80
@@ -42,7 +41,7 @@ return {
 
     local filetype = {
       "filetype",
-      icons_enabled = false,
+      icons_enabled = true,
       icon = nil,
     }
 
@@ -78,11 +77,22 @@ return {
         globalstatus = false,
         icons_enabled = true,
         theme = "catppuccin",
-        component_separators = { left = "", right = "" },
-        section_separators = { left = "", right = "" },
+        component_separators = { left = '', right = ''},
+        section_separators = { left = '', right = ''},
         disabled_filetypes = { "alpha", "dashboard", "NvimTree", "Outline" },
         always_divide_middle = true,
+        ignore_focus = {
+          "NvimTree",
+        },
       },
+      -- sections = {
+      --   lualine_a = {'mode'},
+      --   lualine_b = {'branch', 'diff', 'diagnostics'},
+      --   lualine_c = {'filename'},
+      --   lualine_x = {'encoding', 'fileformat', 'filetype'},
+      --   lualine_y = {'progress'},
+      --   lualine_z = {'location'}
+      -- },
       sections = {
         lualine_a = { branch, diagnostics },
         lualine_b = { mode },
