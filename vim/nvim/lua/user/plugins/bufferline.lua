@@ -77,7 +77,7 @@ return {
         -- [focused and unfocused]. eg: { '|', '|' }
         separator_style = "thin", -- | "thick" | "thin" | { 'any', 'any' },
         enforce_regular_tabs = true,
-        always_show_bufferline = true,
+        always_show_bufferline = false,
         -- sort_by = 'id' | 'extension' | 'relative_directory' | 'directory' | 'tabs' | function(buffer_a, buffer_b)
         --   -- add custom logic
         --   return buffer_a.modified > buffer_b.modified
@@ -94,7 +94,10 @@ return {
             separator = { bg = '#1e1e2e', fg = '#1e1e2e' },
             separator_selected = { bg = '#1e1e2e', fg = '#1e1e2e', },
             buffer_visible = { bg = '#1e1e2e', fg = '#6c7086', },
-            indicator_visible = { fg = '#1e1e2e', bg = '#1e1e2e', },
+            indicator_visible = { bg = '#1e1e2e', fg = '#1e1e2e', },
+            modified = { bg = '#1e1e2e', },
+            modified_visible = { bg = '#1e1e2e', },
+            modified_selected = { bg = '#1e1e2e', },
           },
         },
       },
