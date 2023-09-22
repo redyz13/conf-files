@@ -1,4 +1,4 @@
-return {
+return({
   "jose-elias-alvarez/null-ls.nvim",
   event = { "BufReadPre", "BufNewFile" },
   config = function()
@@ -22,7 +22,7 @@ return {
         -- formatting.prettier.with({ -- js/ts formatter
         --   extra_filetypes = { "svelte" },
         -- }),
-        formatting.stylua, -- Lua formatter
+        -- formatting.stylua, -- Lua formatter
         formatting.black, -- Python formatter
         -- diagnostics.eslint_d.with({ -- js/ts linter
         --   condition = function(utils)
@@ -51,4 +51,4 @@ return {
       end,
     })
   end,
-}
+})

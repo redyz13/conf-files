@@ -5,9 +5,9 @@ return {
   after = "catppuccin",
   name = 'bufferline',
   config = function()
-    require("bufferline").setup{
-      highlights = require("catppuccin.groups.integrations.bufferline").get(),
+    local mocha = require("catppuccin.palettes").get_palette "mocha"
 
+    require("bufferline").setup{
       options = {
         color_icons = true,
         numbers = "none", -- | "ordinal" | "buffer_id" | "both" | function({ ordinal, id, lower, raise }): string,
@@ -62,7 +62,11 @@ return {
         -- end,
 
         -- TODO vim . error
-        offsets = { { filetype = "NvimTree", text = "File Browser", padding = 0 } },
+        offsets = { {
+          filetype = "NvimTree", text = "File Browser", padding = 0,
+          highlight = "Directory",
+          separator = true, -- use a "true" to enable the default, or set your own character
+        }},
 
         show_buffer_icons = true,
         show_buffer_close_icons = true,
@@ -73,11 +77,26 @@ return {
         -- [focused and unfocused]. eg: { '|', '|' }
         separator_style = "thin", -- | "thick" | "thin" | { 'any', 'any' },
         enforce_regular_tabs = true,
-        always_show_bufferline = false,
+        always_show_bufferline = true,
         -- sort_by = 'id' | 'extension' | 'relative_directory' | 'directory' | 'tabs' | function(buffer_a, buffer_b)
         --   -- add custom logic
         --   return buffer_a.modified > buffer_b.modified
         -- end
+      },
+      highlights = require("catppuccin.groups.integrations.bufferline").get {
+        styles = { "italic", "bold" },
+        custom = {
+          mocha = {
+            fill = { bg = '#1e1e2e', },
+            close_button = { bg = '#1e1e2e', },
+            background = { bg = '#1e1e2e', },
+            close_button_visible = { bg = '#1e1e2e', },
+            separator = { bg = '#1e1e2e', fg = '#1e1e2e' },
+            separator_selected = { bg = '#1e1e2e', fg = '#1e1e2e', },
+            buffer_visible = { bg = '#1e1e2e', fg = '#6c7086', },
+            indicator_visible = { fg = '#1e1e2e', bg = '#1e1e2e', },
+          },
+        },
       },
       -- highlights = {
     --     fill = {
