@@ -8,7 +8,6 @@ return {
   },
   config = function()
     local lspconfig = require("lspconfig")
-    local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
     local keymap = vim.keymap
     local opts = { noremap = true, silent = true, buffer = true }
@@ -34,6 +33,8 @@ return {
       keymap.set("n", "<leader>ft", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
       -- keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file
     end
+
+    local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
     lspconfig.pyright.setup{
       on_attach = on_attach,
