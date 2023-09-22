@@ -76,4 +76,4 @@ keymap("x", "<A-k>", ":m '<-2<CR>gv=gv", opts)
 keymap("t", "<Esc>", "<C-\\><C-N>", opts)
 
 -- Close buffer
--- keymap("n", "<leader>cb", "<cmd>Bdelete!<CR>", opts)
+keymap("n", "<leader>cb", "<cmd>Bdelete!<CR>", opts)
