@@ -22,6 +22,7 @@ return {
       }
     }
     lspconfig.pyright.setup{}
+    lspconfig.clangd.setup{}
 
     local keymap = vim.keymap
     local opts = { noremap = true, silent = true, buffer = true }
