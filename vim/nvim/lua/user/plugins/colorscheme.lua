@@ -47,9 +47,28 @@ return {
         harpoon = true,
         mason = true,
         which_key = true,
+        lsp_saga = true,
         indent_blankline = {
           enabled = true,
           colored_indent_levels = false,
+        },
+        native_lsp = {
+          enabled = true,
+          virtual_text = {
+            errors = { "italic" },
+            hints = { "italic" },
+            warnings = { "italic" },
+            information = { "italic" },
+          },
+          underlines = {
+            errors = { "underline" },
+            hints = { "underline" },
+            warnings = { "underline" },
+            information = { "underline" },
+          },
+          inlay_hints = {
+            background = true,
+          },
         },
         -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
       },
