@@ -23,8 +23,8 @@ return {
       styles = { -- Handles the styles of general hi groups (see `:h highlight-args`):
         comments = { "italic" }, -- Change the style of comments
         conditionals = { "italic" },
-        loops = {},
-        functions = {},
+        loops = { "italic" },
+        functions = { "italic" },
         keywords = {},
         strings = {},
         variables = {},
