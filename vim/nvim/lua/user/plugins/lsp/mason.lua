@@ -1,7 +1,42 @@
 return {
     "williamboman/mason.nvim",
     name = "mason",
+    dependencies = {
+      "williamboman/mason-lspconfig.nvim",
+      "jayp0521/mason-null-ls.nvim",
+    },
     config = function()
-      require("mason").setup()
+      local mason = require("mason")
+      local mason_lspconfig = require("mason-lspconfig")
+      local mason_null_ls = require("mason-null-ls")
+
+      mason.setup({
+        ui = {
+          icons = {
+            package_installed = "✓",
+            package_pending = "➜",
+            package_uninstalled = "✗"
+          }
+        }
+      })
+
+      mason_lspconfig.setup({
+        -- Servers
+        ensure_installed = {
+          "lua_ls",
+          "clangd",
+          "pyright",
+        },
+        automatic_installation = true,
+      })
+
+      mason_null_ls.setup({
+        -- Formatters & linters
+        ensure_installed = {
+          "stylua",
+          "black",
+        },
+        automatic_installation = true,
+      })
     end
 }
