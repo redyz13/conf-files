@@ -13,6 +13,7 @@
   "friendly-snippets": { "branch": "main", "commit": "ebf6d6e83494cdd88a54a429340256f4dbb6a052" },
   "gitsigns": { "branch": "main", "commit": "f0e9f5dd3218774fa725e55965b40ca78c2104eb" },
   "indent-line": { "branch": "master", "commit": "9637670896b68805430e2f72cf5d16be5b97a22a" },
+  "jdtls": { "branch": "master", "commit": "3ca419c52a7c20a2565237db2c110ed68fc7e6f1" },
   "lazy.nvim": { "branch": "main", "commit": "2a9354c7d2368d78cbd5575a51a2af5bd8a6ad01" },
   "lspkind.nvim": { "branch": "master", "commit": "57610d5ab560c073c465d6faf0c19f200cb67e6e" },
   "lspsaga": { "branch": "main", "commit": "14f0c87db4c52d0b9e92d8c1a1fece10a00f6f91" },

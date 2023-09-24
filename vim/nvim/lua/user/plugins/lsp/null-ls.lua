@@ -1,4 +1,4 @@
-return({
+return {
   "jose-elias-alvarez/null-ls.nvim",
   event = { "BufReadPre", "BufNewFile" },
   config = function()
@@ -53,4 +53,4 @@ return({
       end,
     })
   end,
-})
+}
