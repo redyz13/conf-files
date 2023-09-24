@@ -98,9 +98,7 @@ return {
             modified = { bg = '#1e1e2e', },
             modified_visible = { bg = '#1e1e2e', },
             modified_selected = { bg = '#1e1e2e', },
-            trunc_marker = {
-                bg = '#1e1e2e',
-            },
+            trunc_marker = { bg = '#1e1e2e', },
           },
         },
       },

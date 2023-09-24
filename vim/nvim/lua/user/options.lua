@@ -36,8 +36,10 @@ local options = {
   wrap = false,                            -- display lines as one long line
   guifont = "monospace:h17",               -- the font used in graphical neovim applications
   autochdir = true,                        -- set working directory to current file automatically
-  backspace = "indent,eol,start"
+  backspace = "indent,eol,start",
 }
+
+
 
 vim.opt.shortmess:append "c"
 
