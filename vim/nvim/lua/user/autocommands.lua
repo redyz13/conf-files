@@ -35,6 +35,9 @@ vim.cmd([[
   " Disable line numbers in terminal mode
   autocmd TermOpen * setlocal nonumber norelativenumber
 
+  " Disable line numbers in terminal mode
+  autocmd TermOpen * setlocal nocursorline
+
   " " Autoformat
   " augroup _lsp
   "   autocmd!
