@@ -39,8 +39,8 @@ fish_add_path $HOME/.cpath
 fm6000 -c magenta -f ~/.cpath/cat.txt
 
 # Java
-fish_add_path PATH=$PATH:$HOME/Tools/jdk-19/bin
-fish_add_path CLASSPATH=$CLASSPATH:~/Tools/mysql-connector-j-8.0.31.jar
+fish_add_path $HOME/Tools/jdk-19/bin
+set -x CLASSPATH "~/Tools/mysql-connector-j-8.0.31.jar"
 
 # Sashimi
 function fish_prompt
