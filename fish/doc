@@ -1,17 +1,12 @@
 # Fish installation
+sudo apt-add-repository ppa:fish-shell/release-3
+sudo apt update
 sudo apt install fish
 fish
 set fish_greeting
 
 sudo apt install curl
 sudo apt install fonts-powerline
-
-# Install omf
-curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
-
-# Change theme
-omf install sashimi
-omf install https://github.com/dracula/fish
 
 # Outside of fish set fish as default shell
 chsh -s /usr/bin/fish
@@ -20,17 +15,11 @@ chsh -s /usr/bin/fish
 git clone https://github.com/dracula/colorls
 cp dark_colors.yaml ~/.config/colorls/dark_colors.yaml # Create folder if needed
 
-# Z
-curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
-fisher install jethrokuan/z
-
-# Fish repo
-sudo apt-add-repository ppa:fish-shell/release-3
-sudo apt update
-sudo apt install fish
-
 # Fisher
 curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
+
+# Z
+fisher install jethrokuan/z
 
 # Catppuccin
 fisher install catppuccin/fish
@@ -38,3 +27,6 @@ fish_config theme save "Catppuccin Mocha"
 
 # Sashimi (set into config.fish)
 fisher install isacikgoz/sashimi
+
+# Nvm (https://github.com/jorgebucaran/nvm.fish)
+fisher install jorgebucaran/nvm.fish
