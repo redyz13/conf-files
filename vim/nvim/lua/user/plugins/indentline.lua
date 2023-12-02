@@ -1,6 +1,7 @@
 return {
   "lukas-reineke/indent-blankline.nvim",
   name = "indent-line",
+  version = "2.20.8",
   config = function()
     vim.g.indent_blankline_buftype_exclude = { "terminal", "nofile" }
     vim.g.indent_blankline_filetype_exclude = {
