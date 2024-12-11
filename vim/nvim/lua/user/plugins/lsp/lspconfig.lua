@@ -78,10 +78,10 @@ return {
     vim.diagnostic.config({
       signs = {
         text = {
-          ERROR = signs.ERROR,
-          WARN = signs.WARN,
-          INFO = signs.INFO,
-          HINT = signs.HINT,
+          ERROR = signs.Error,
+          WARN = signs.Warn,
+          INFO = signs.Info,
+          HINT = signs.Hint,
         },
       },
     })

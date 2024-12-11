@@ -22,7 +22,7 @@ return {
         -- formatting.prettier.with({ -- js/ts formatter
         --   extra_filetypes = { "svelte" },
         -- }),
-        formatting.stylua, -- Lua formatter
+        -- formatting.stylua, -- Lua formatter
         formatting.black, -- Python formatter
         diagnostics.mypy,
           -- ruff having problems
