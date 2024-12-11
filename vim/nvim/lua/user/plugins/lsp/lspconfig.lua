@@ -75,10 +75,16 @@ return {
     -- Old hint = "ﴞ"
     local signs = { Error = " ", Warn = " ", Hint = "󰵚", Info = " " }
 
-    for type, icon in pairs(signs) do
-      local hl = "DiagnosticSign" .. type
-      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-    end
+    vim.diagnostic.config({
+      signs = {
+        text = {
+          ERROR = signs.ERROR,
+          WARN = signs.WARN,
+          INFO = signs.INFO,
+          HINT = signs.HINT,
+        },
+      },
+    })
 
   end
 }

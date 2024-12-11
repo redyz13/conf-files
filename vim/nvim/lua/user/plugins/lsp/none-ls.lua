@@ -1,5 +1,5 @@
 return {
-  "jose-elias-alvarez/null-ls.nvim",
+  "nvimtools/none-ls.nvim",
   event = { "BufReadPre", "BufNewFile" },
   config = function()
     local null_ls = require("null-ls")
@@ -22,10 +22,11 @@ return {
         -- formatting.prettier.with({ -- js/ts formatter
         --   extra_filetypes = { "svelte" },
         -- }),
-        -- formatting.stylua, -- Lua formatter
+        formatting.stylua, -- Lua formatter
         formatting.black, -- Python formatter
         diagnostics.mypy,
-        diagnostics.ruff,
+          -- ruff having problems
+          -- diagnostics.ruff,
         -- diagnostics.eslint_d.with({ -- js/ts linter
         --   condition = function(utils)
         --     return utils.root_has_file({ ".eslintrc.js", ".eslintrc.cjs" }) -- Only enable if root has .eslintrc.js or .eslintrc.cjs
