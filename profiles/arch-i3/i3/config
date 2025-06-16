@@ -32,10 +32,10 @@ bindsym $mod+q kill
 bindsym $mod+d exec rofi -show drun -font 'Hack Nerd Font 12'
 
 # Change focus (vim-style)
-bindsym $mod+h focus right
+bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
-bindsym $mod+l focus left
+bindsym $mod+l focus right
 
 # Arrows as alternative
 bindsym $mod+Left focus left
