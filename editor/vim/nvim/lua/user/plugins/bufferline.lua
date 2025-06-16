@@ -5,7 +5,7 @@ return {
   after = "catppuccin",
   name = 'bufferline',
   config = function()
-    local mocha = require("catppuccin.palettes").get_palette "mocha"
+    -- local mocha = require("catppuccin.palettes").get_palette "mocha"
 
     require("bufferline").setup{
       options = {
@@ -83,25 +83,26 @@ return {
         --   return buffer_a.modified > buffer_b.modified
         -- end
       },
-      highlights = require("catppuccin.groups.integrations.bufferline").get {
-        styles = { "italic", "bold" },
-        custom = {
-          mocha = {
-            fill = { bg = '#1e1e2e', },
-            close_button = { bg = '#1e1e2e', },
-            background = { bg = '#1e1e2e', },
-            close_button_visible = { bg = '#1e1e2e', },
-            separator = { bg = '#1e1e2e', fg = '#1e1e2e' },
-            separator_selected = { bg = '#1e1e2e', fg = '#1e1e2e', },
-            buffer_visible = { bg = '#1e1e2e', fg = '#6c7086', },
-            indicator_visible = { bg = '#1e1e2e', fg = '#1e1e2e', },
-            modified = { bg = '#1e1e2e', },
-            modified_visible = { bg = '#1e1e2e', },
-            modified_selected = { bg = '#1e1e2e', },
-            trunc_marker = { bg = '#1e1e2e', },
-          },
-        },
-      },
+      -- Uncomment for catppuccin theme
+      -- highlights = require("catppuccin.groups.integrations.bufferline").get {
+      --   styles = { "italic", "bold" },
+      --   custom = {
+      --     mocha = {
+      --       fill = { bg = '#1e1e2e', },
+      --       close_button = { bg = '#1e1e2e', },
+      --       background = { bg = '#1e1e2e', },
+      --       close_button_visible = { bg = '#1e1e2e', },
+      --       separator = { bg = '#1e1e2e', fg = '#1e1e2e' },
+      --       separator_selected = { bg = '#1e1e2e', fg = '#1e1e2e', },
+      --       buffer_visible = { bg = '#1e1e2e', fg = '#6c7086', },
+      --       indicator_visible = { bg = '#1e1e2e', fg = '#1e1e2e', },
+      --       modified = { bg = '#1e1e2e', },
+      --       modified_visible = { bg = '#1e1e2e', },
+      --       modified_selected = { bg = '#1e1e2e', },
+      --       trunc_marker = { bg = '#1e1e2e', },
+      --     },
+      --   },
+      -- },
       -- highlights = {
     --     fill = {
     --       guifg = { attribute = "fg", highlight = "TabLine" },

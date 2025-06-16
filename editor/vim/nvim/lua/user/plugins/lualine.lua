@@ -75,7 +75,8 @@ return {
       options = {
         globalstatus = true,
         icons_enabled = true,
-        theme = "catppuccin",
+        -- theme = "catppuccin",
+        theme = "pywal",
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
         disabled_filetypes = { "alpha", "dashboard", "NvimTree", "Outline" },

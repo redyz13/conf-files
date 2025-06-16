@@ -1,3 +1,5 @@
+vim.g.my_colorscheme = "pywal"
+
 local options = {
   undofile = true,                         -- enable persistent undo
   backup = false,                          -- creates a backup file
@@ -38,8 +40,6 @@ local options = {
   autochdir = true,                        -- set working directory to current file automatically
   backspace = "indent,eol,start",
 }
-
-
 
 vim.opt.shortmess:append "c"
 

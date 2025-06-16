@@ -7,9 +7,10 @@ return {
     },
     config = function()
         require('lspsaga').setup({
-          ui = {
-            kind = require("catppuccin.groups.integrations.lsp_saga").custom_kind(),
-          },
+          -- Uncomment for catppuccin
+          -- ui = {
+          --   kind = require("catppuccin.groups.integrations.lsp_saga").custom_kind(),
+          -- },
           symbol_in_winbar = {
             folder_level = 2,
           },

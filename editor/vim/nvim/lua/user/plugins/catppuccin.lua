@@ -3,6 +3,7 @@ return {
   name = "catppuccin",
   priority = 1000,
   config = function()
+    if vim.g.my_colorscheme ~= "catppuccin" then return end
     require("catppuccin").setup({
       flavour = "mocha", -- latte, frappe, macchiato, mocha
       background = { -- :h background
