@@ -39,6 +39,7 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 alias vim='nvim'
+alias y='xclip -selection clipboard'
 
 # Pacman
 alias update-all='sudo pacman -Syuu'
@@ -59,16 +60,19 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 PS1='[\u@\h \W]\$ '
 
 # Color scheme via pywal
-wal -q -e -n -i "$HOME/Wallpapers/lain_cross.jpeg"
+wal -q -e -n -i "$HOME/Wallpapers/lain.jpg"
 cat "$HOME/.cache/wal/sequences" &> /dev/null &
 cat "$HOME/.cache/wal/sequences"
 [ -f "$HOME/.cache/wal/colors-tty.sh" ] && source "$HOME/.cache/wal/colors-tty.sh"
 
-# Fetch info
-[ -x "$(command -v pfetch)" ] && pfetch
+# Cat
+export PATH=$PATH:$HOME/.cpath
+fm6000 -f ~/.cpath/cat.txt
 
 # Node version manager
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+[ -f ~/.config/nnn/env ] && source ~/.config/nnn/env
 
