@@ -172,6 +172,9 @@ client.urgent           $bg $bg $fg $bg $bg
 client.placeholder      $bg $bg $fg $bg $bg
 client.background       $bg
 
+# Color picker
+bindsym $mod+c exec --no-startup-id sh -c 'xcolor | xclip -selection clipboard'
+
 # Polybar
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
