@@ -43,7 +43,7 @@ module-margin-right = 1
 
 font-0 = Hack Nerd Font:size=14
 
-modules-left = pulseaudio memory cpu
+modules-left = pulseaudio memory cpu brightness
 modules-center = date
 modules-right = filesystem battery
 
@@ -85,6 +85,7 @@ type = internal/fs
 interval = 25
 
 mount-0 = /
+mount-1 = /mnt/backup
 
 format-mounted = <label-mounted>
 label-mounted = %mountpoint%: %percentage_used%%
@@ -198,7 +199,7 @@ screenchange-reload = true
 
 [module/spotify]
 type = custom/script
-interval = 0.1 
+interval = 0.5 
 format-prefix = "playing: "
 format = <label>
 format-prefix-foreground = ${xrdb:color2}
@@ -217,3 +218,15 @@ format-full = <label-full>
 label-charging = %percentage%% (charging)
 label-discharging = %percentage%%
 label-full = %percentage%% (full)
+
+[module/brightness]
+type = custom/script
+exec = brightnessctl | grep -oP '\(\K[0-9]+(?=%)'
+format-prefix = "brightness: "
+format-prefix-foreground = ${xrdb:color2}
+interval = 0.1
+label = %output%%
+click-right = brightnessctl s 10%-
+click-left = brightnessctl s +10%
+scroll-up = brightnessctl s +5%
+scroll-down = brightnessctl s 5%-
