@@ -8,10 +8,6 @@ set -g fish_greeting
 # Tilde key
 bind -k npage 'commandline -a \~; commandline -f forward-char'
 
-# Cat
-fish_add_path $HOME/.cpath
-fm6000 -f ~/.cpath/cat.txt
-
 # Run nvm
 nvm use lts > /dev/null
 
@@ -31,6 +27,10 @@ end
 if test -f "$HOME/.zpath/z.sh"
     bash "$HOME/.zpath/z.sh"
 end
+
+# Cat
+fish_add_path $HOME/.cpath
+fm6000 -f ~/.cpath/cat.txt
 
 # Aliases
 
