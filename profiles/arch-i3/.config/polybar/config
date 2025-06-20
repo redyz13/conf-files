@@ -17,7 +17,8 @@
 ;==========================================================
 
 [colors]
-background = ${xrdb:color0}
+;background = ${xrdb:color0}
+background = #00000000
 foreground = ${xrdb:color}
 primary = ${xrdb:color1}
 secondary = ${xrdb:color5}
@@ -160,6 +161,9 @@ label-muted-foreground = #666
 format-muted-prefix = "audio: "
 format-muted-prefix-foreground = ${xrdb:color2}
 
+scroll-up = pactl set-sink-volume @DEFAULT_SINK@ +5%
+scroll-down = pactl set-sink-volume @DEFAULT_SINK@ -5%
+
 [module/powermenu]
 type = custom/menu
 
@@ -207,8 +211,8 @@ exec = python $HOME/.config/polybar/spotify.py -f '{song}'
 
 [module/battery]
 type = internal/battery
-battery = BAT1
-adapter = ACAD
+battery = BAT0
+adapter = AC
 poll-interval = 2
 
 format-charging = <label-charging>
