@@ -36,10 +36,9 @@ fm6000 -f ~/.cpath/cat.txt
 
 # General aliases
 alias ..='cd ..'
-alias ls='ls -lha --color=auto'
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
+alias ls='exa -ha'
+alias la='exa -alF'
+alias ll='exa -lha'
 alias vim='nvim'
 alias y='xclip -selection clipboard'
 
@@ -47,7 +46,7 @@ alias y='xclip -selection clipboard'
 alias update-all='sudo pacman -Syuu'
 alias cleanup='sudo pacman -Rns (pacman -Qtdq)'
 
-# APT
+# Apt
 alias aptup='sudo apt update && sudo apt upgrade'
 alias aptupd='sudo apt update'
 alias aptupg='sudo apt upgrade'
