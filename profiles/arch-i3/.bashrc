@@ -59,7 +59,7 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 PS1='[\u@\h \W]\$ '
 
 # Color scheme via pywal
-wal -q -e -n -i "$HOME/Wallpapers/lain.jpg"
+wal -q -e -n -R
 cat "$HOME/.cache/wal/sequences" &> /dev/null &
 cat "$HOME/.cache/wal/sequences"
 [ -f "$HOME/.cache/wal/colors-tty.sh" ] && source "$HOME/.cache/wal/colors-tty.sh"

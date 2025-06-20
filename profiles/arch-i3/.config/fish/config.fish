@@ -16,7 +16,7 @@ if test -z "$DISPLAY"; and test "$XDG_VTNR" = "1"
 end
 
 # Color scheme via pywal
-wal -q -e -n -i "$HOME/Wallpapers/lain.jpg"
+wal -q -e -n -R
 cat "$HOME/.cache/wal/sequences" > /dev/null 2>&1 &
 cat "$HOME/.cache/wal/sequences"
 if test -f "$HOME/.cache/wal/colors-tty.sh"
