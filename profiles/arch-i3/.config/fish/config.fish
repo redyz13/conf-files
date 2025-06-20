@@ -24,10 +24,10 @@ if test -f "$HOME/.cache/wal/colors-tty.sh"
 end
 
 # Load tmux
-if status  is-interactive
-and not set -q TMUX
-  exec tmux new-session -A -s "<3"
-end
+# if status  is-interactive
+# and not set -q TMUX
+#   exec tmux new-session -A -s "<3"
+# end
 
 # Source z
 if test -f "$HOME/.zpath/z.sh"
