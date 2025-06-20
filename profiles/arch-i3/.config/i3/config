@@ -115,20 +115,28 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # Resize mode
-mode "resize" {
-    bindsym h resize shrink width 30 px or 30 ppt
-    bindsym j resize grow height 30 px or 30 ppt
-    bindsym k resize shrink height 30 px or 30 ppt
-    bindsym l resize grow width 30 px or 30 ppt
-    bindsym Left resize shrink width 30 px or 30 ppt
-    bindsym Down resize grow height 30 px or 30 ppt
-    bindsym Up resize shrink height 30 px or 30 ppt
-    bindsym Right resize grow width 30 px or 30 ppt
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-    bindsym $mod+r mode "default"
-}
-bindsym $mod+r mode "resize"
+# mode "resize" {
+#     bindsym h resize shrink width 30 px or 30 ppt
+#     bindsym j resize grow height 30 px or 30 ppt
+#     bindsym k resize shrink height 30 px or 30 ppt
+#     bindsym l resize grow width 30 px or 30 ppt
+#     bindsym Left resize shrink width 30 px or 30 ppt
+#     bindsym Down resize grow height 30 px or 30 ppt
+#     bindsym Up resize shrink height 30 px or 30 ppt
+#     bindsym Right resize grow width 30 px or 30 ppt
+#     bindsym Return mode "default"
+#     bindsym Escape mode "default"
+#     bindsym $mod+r mode "default"
+# }
+# bindsym $mod+r mode "resize"
+bindsym $mod+Ctrl+h resize shrink width 30 px or 30 ppt
+bindsym $mod+Ctrl+l resize grow   width 30 px or 30 ppt
+bindsym $mod+Ctrl+j resize grow   height 30 px or 30 ppt
+bindsym $mod+Ctrl+k resize shrink height 30 px or 30 ppt
+bindsym $mod+Ctrl+Left resize shrink width 30 px or 30 ppt
+bindsym $mod+Ctrl+Down resize grow height 30 px or 30 ppt
+bindsym $mod+Ctrl+Up resize shrink height 30 px or 30 ppt
+bindsym $mod+Ctrl+Right resize grow width 30 px or 30 ppt
 
 # i3-gaps
 for_window [class="^.*"] border pixel 2
