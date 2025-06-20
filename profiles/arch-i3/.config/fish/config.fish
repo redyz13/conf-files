@@ -23,6 +23,12 @@ if test -f "$HOME/.cache/wal/colors-tty.sh"
     bash "$HOME/.cache/wal/colors-tty.sh"
 end
 
+# Load tmux
+if status  is-interactive
+and not set -q TMUX
+  exec tmux new-session -A -s "<3"
+end
+
 # Source z
 if test -f "$HOME/.zpath/z.sh"
     bash "$HOME/.zpath/z.sh"
@@ -130,3 +136,4 @@ end
 function _is_git_dirty
   echo (command git status -s --ignore-submodules=dirty 2>/dev/null)
 end
+
