@@ -43,7 +43,7 @@ module-margin-right = 1
 
 font-0 = Hack Nerd Font:size=14
 
-modules-left = pulseaudio memory cpu brightness
+modules-left = pulseaudio brightness memory cpu
 modules-center = date
 modules-right = filesystem battery
 
