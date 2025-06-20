@@ -191,13 +191,14 @@ bindsym Mod1+Tab        exec $i3t_alt_tab
 bindsym Mod1+Shift+Tab  exec $i3t_alt_shift_tab
 
 # Wallpaper
-exec_always feh --bg-fill --randomize $HOME/Wallpapers/
+# exec_always feh --bg-fill --randomize $HOME/Wallpapers/
+exec_always --no-startup-id sh -c 'wal -q -i "$(find $HOME/Wallpapers -type f | shuf -n 1)"'
 
 # Picom
 exec_always picom -f
 
-# Pywal
-exec_always wal -R
+# # Pywal
+# exec_always wal -R
 
 # Monitors
 exec_always xrandr --output eDP-1 --mode 1920x1080 --primary --rate 120.00
