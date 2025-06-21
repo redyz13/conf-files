@@ -111,7 +111,8 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 
 # Reload / restart / exit
 bindsym $mod+Shift+c reload
-bindsym $mod+Shift+r restart
+# bindsym $mod+Shift+r restart
+bindsym $mod+Shift+r exec --no-startup-id sh -c 'i3-msg restart && sleep 0.5 && ~/.config/i3/reload-colors-nvim.sh'
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # Resize mode
