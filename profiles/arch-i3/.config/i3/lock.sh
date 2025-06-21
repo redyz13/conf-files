@@ -3,6 +3,8 @@
 img="/tmp/screen_locked.png"
 blur="/tmp/screen_locked_blur.png"
 
+rm -f "$img" "$blur"
+
 if scrot "$img"; then
   convert "$img" -blur 0x6 "$blur"
 else
