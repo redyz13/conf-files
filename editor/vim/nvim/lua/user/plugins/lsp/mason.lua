@@ -35,7 +35,6 @@ return {
         ensure_installed = {
           "stylua",
           "black",
-          "mypy",
           "ruff",
         },
         automatic_installation = true,

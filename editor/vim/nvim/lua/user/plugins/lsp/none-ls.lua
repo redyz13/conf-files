@@ -24,7 +24,6 @@ return {
         -- }),
         -- formatting.stylua, -- Lua formatter
         formatting.black, -- Python formatter
-        diagnostics.mypy,
           -- ruff having problems
           -- diagnostics.ruff,
         -- diagnostics.eslint_d.with({ -- js/ts linter
