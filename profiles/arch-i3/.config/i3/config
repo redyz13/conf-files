@@ -193,7 +193,7 @@ client.background       $bg
 bindsym $mod+c exec --no-startup-id sh -c 'xcolor | xclip -selection clipboard'
 
 # Polybar
-exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+# exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
 # Alt-tab
 set $i3t_alt_tab        $HOME/.config/i3/i3-alt-tab.py n
