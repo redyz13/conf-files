@@ -19,7 +19,7 @@ floating_modifier $mod
 
 # Start terminal
 # bindsym $mod+Return exec i3-sensible-terminal
-exec_always --no-startup-id tmux new-session -d -s preload # Avoid prolem with first terminal
+# exec_always --no-startup-id tmux new-session -d -s preload # Avoid prolem with first terminal
 bindsym $mod+Return exec --no-startup-id i3-sensible-terminal -e ~/.config/i3/tmux.sh
 
 # Lock screen
@@ -213,4 +213,8 @@ exec_always picom -f
 
 # Vibrance for NVIDIA
 exec_always --no-startup-id nvidia-settings -a "[dpy:4]/DigitalVibrance=512"
+
+# Screenshot
+bindsym $mod+Shift+s exec maim -s | xclip -selection clipboard -t image/png
+bindsym $mod+Shift+d exec maim -s | tee ~/Pictures/screen_$(date '+%Y-%m-%d_%H-%M-%S').png | xclip -selection clipboard -t image/png
 
