@@ -1,0 +1,26 @@
+pkgname=tmux-custom
+pkgver=3.2a
+pkgrel=1
+pkgdesc="Terminal multiplexer - custom build with SIGEXIT fix"
+arch=('x86_64')
+url="https://github.com/tmux/tmux"
+license=('BSD')
+depends=('libevent' 'ncurses' 'libutempter')
+makedepends=('git' 'pkgconf' 'gcc' 'make' 'autoconf' 'automake')
+provides=('tmux')
+conflicts=('tmux')
+source=("git+https://github.com/tmux/tmux.git#commit=8da9ec16898f875e2d1cd02915e80eaacdcde02a")
+sha256sums=('SKIP')
+
+build() {
+  cd tmux
+  sh autogen.sh
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd tmux
+  make DESTDIR="${pkgdir}" install
+}
+
