@@ -22,7 +22,7 @@ cat <<EOF > "$DUNST_CONFIG"
     transparency = 10
     timeout = 5
     origin = top-right
-    offset = (13,46)
+    offset = (32,63)
 
 [urgency_low]
     background = "${colors[0]}"
@@ -43,4 +43,5 @@ EOF
 pkill -x dunst 2>/dev/null || true
 
 dunst -conf "$DUNST_CONFIG" &
+
 
