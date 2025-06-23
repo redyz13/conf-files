@@ -214,7 +214,3 @@ exec_always picom -f
 # Vibrance for NVIDIA
 exec_always --no-startup-id nvidia-settings -a "[dpy:4]/DigitalVibrance=512"
 
-# Monitors
-exec_always xrandr --output eDP-1 --mode 1920x1080 --primary --rate 120.00
-exec_always xrandr --output HDMI-1 --mode 1920x1080 --rate 60.00 --left-of eDP-1
-

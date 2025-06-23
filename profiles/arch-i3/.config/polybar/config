@@ -211,8 +211,8 @@ exec = python $HOME/.config/polybar/spotify.py -f '{song}'
 
 [module/battery]
 type = internal/battery
-battery = BAT0
-adapter = AC
+battery = BAT1
+adapter = ACAD
 poll-interval = 2
 
 format-charging = <label-charging>
