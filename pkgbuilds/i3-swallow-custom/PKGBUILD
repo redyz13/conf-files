@@ -1,0 +1,16 @@
+pkgname=i3-swallow-custom
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Swallow terminal windows when launching GUI apps in i3"
+arch=('any')
+url="https://github.com/jamesofarrell/i3-swallow"
+license=('MIT')
+depends=('python' 'python-i3ipc')
+makedepends=('git')
+source=("git+https://github.com/jamesofarrell/i3-swallow.git")
+md5sums=('SKIP')
+
+package() {
+  install -Dm755 "${srcdir}/i3-swallow/i3_swallow/swallow.py" "${pkgdir}/usr/bin/swallow"
+}
+
