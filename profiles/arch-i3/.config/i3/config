@@ -5,6 +5,15 @@ set $mod Mod4
 font pango:Hack Nerd Font 14
 
 # ---------------------------
+# Volume controls (PulseAudio)
+# ---------------------------
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +1% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -1% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# ---------------------------
 # Workspace definitions
 # ---------------------------
 set $ws1 "1"
@@ -220,8 +229,8 @@ bindsym $mod+c exec --no-startup-id sh -c 'xcolor | xclip -selection clipboard'
 # ---------------------------
 # Alt-Tab
 # ---------------------------
-set $i3t_alt_tab        $HOME/.config/i3/i3-alt-tab.py n
-set $i3t_alt_shift_tab  $HOME/.config/i3/i3-alt-tab.py p
+set $i3t_alt_tab        ~/.config/i3/i3-alt-tab.py n
+set $i3t_alt_shift_tab  ~/.config/i3/i3-alt-tab.py p
 bindsym Mod1+Tab        exec $i3t_alt_tab
 bindsym Mod1+Shift+Tab  exec $i3t_alt_shift_tab
 
