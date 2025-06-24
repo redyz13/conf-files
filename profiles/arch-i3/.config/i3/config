@@ -1,79 +1,12 @@
-# Mod key
+# ---------------------------
+# Mod key & Font
+# ---------------------------
 set $mod Mod4
-
-# Font
 font pango:Hack Nerd Font 14
 
-# NetworkManager applet
-exec --no-startup-id nm-applet
-
-# Volume controls (PulseAudio)
-set $refresh_i3status killall -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +1% && $refresh_i3status
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -1% && $refresh_i3status
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
-
-# Mouse modifier
-floating_modifier $mod
-
-# Start terminal
-# bindsym $mod+Return exec i3-sensible-terminal
-exec_always --no-startup-id tmux new-session -d -s preload # Avoid prolem with first terminal
-bindsym $mod+Return exec --no-startup-id i3-sensible-terminal -e ~/.config/i3/tmux.sh
-
-# Lock screen
-bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/lock.sh
-exec_always --no-startup-id xss-lock ~/.config/i3/lock.sh
-exec_always --no-startup-id xset s 300 dpms 600 600 600
-
-# Kill window
-bindsym $mod+q kill
-
-# Rofi
-bindsym $mod+d exec rofi -show drun -font 'Hack Nerd Font 12'
-
-# Change focus (vim-style)
-bindsym $mod+h focus left
-bindsym $mod+j focus down
-bindsym $mod+k focus up
-bindsym $mod+l focus right
-
-# Arrows as alternative
-bindsym $mod+Left focus left
-bindsym $mod+Down focus down
-bindsym $mod+Up focus up
-bindsym $mod+Right focus right
-
-# Move focused window (vim-style)
-bindsym $mod+Shift+l move right 30px
-bindsym $mod+Shift+j move down 30px
-bindsym $mod+Shift+k move up 30px
-bindsym $mod+Shift+h move left 30px
-
-# Arrows as alternative
-bindsym $mod+Shift+Left move left 30px
-bindsym $mod+Shift+Down move down 30px
-bindsym $mod+Shift+Up move up 30px
-bindsym $mod+Shift+Right move right 30px
-
-# Toggle split layout (horizontal/vertical)
-bindsym $mod+e layout toggle split
-
-# Manual split
-bindsym $mod+v exec --no-startup-id i3-msg "split toggle"
-
-# Fullscreen
-bindsym $mod+f fullscreen toggle
-
-# Toggle tiling/floating
-bindsym $mod+Shift+space floating toggle
-bindsym $mod+space focus mode_toggle
-
-# Focus parent container
-bindsym $mod+a focus parent
-
-# Workspaces
+# ---------------------------
+# Workspace definitions
+# ---------------------------
 set $ws1 "1"
 set $ws2 "2"
 set $ws3 "3"
@@ -85,37 +18,57 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
-# Switch workspace
-bindsym $mod+1 workspace number $ws1
-bindsym $mod+2 workspace number $ws2
-bindsym $mod+3 workspace number $ws3
-bindsym $mod+4 workspace number $ws4
-bindsym $mod+5 workspace number $ws5
-bindsym $mod+6 workspace number $ws6
-bindsym $mod+7 workspace number $ws7
-bindsym $mod+8 workspace number $ws8
-bindsym $mod+9 workspace number $ws9
-bindsym $mod+0 workspace number $ws10
+# ---------------------------
+# Color variables
+# ---------------------------
+set_from_resource $fg i3wm.color7 #f0f0f0
+set_from_resource $ubg i3wm.color6 #f0f0f0
+set_from_resource $fbg i3wm.color2 #f0f0f0
 
-# Move container to workspace
-bindsym $mod+Shift+1 move container to workspace number $ws1
-bindsym $mod+Shift+2 move container to workspace number $ws2
-bindsym $mod+Shift+3 move container to workspace number $ws3
-bindsym $mod+Shift+4 move container to workspace number $ws4
-bindsym $mod+Shift+5 move container to workspace number $ws5
-bindsym $mod+Shift+6 move container to workspace number $ws6
-bindsym $mod+Shift+7 move container to workspace number $ws7
-bindsym $mod+Shift+8 move container to workspace number $ws8
-bindsym $mod+Shift+9 move container to workspace number $ws9
-bindsym $mod+Shift+0 move container to workspace number $ws10
+# ---------------------------
+# Window colors
+# ---------------------------
+client.focused          $fbg $fbg $fg $fbg $fbg
+client.focused_inactive $bg $bg $fg $bg $bg
+client.unfocused        $ubg $ubg $fg $ubg $ubg
+client.urgent           $bg $bg $fg $bg $bg
+client.placeholder      $bg $bg $fg $bg $bg
+client.background       $bg
 
-# Reload / restart / exit
-bindsym $mod+Shift+c reload
-# bindsym $mod+Shift+r restart
-bindsym $mod+Shift+r exec --no-startup-id sh -c 'i3-msg restart && sleep 0.5 && ~/.config/i3/reload-colors-nvim.sh'
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+# ---------------------------
+# i3-gaps & Border settings
+# ---------------------------
+for_window [class="^.*"] border pixel 2
+gaps inner 10
+gaps outer 2
 
-# Resize mode
+# ---------------------------
+# Focus navigation (vim-style & arrows)
+# ---------------------------
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# ---------------------------
+# Move focused window (vim-style & arrows)
+# ---------------------------
+bindsym $mod+Shift+h move left 30px
+bindsym $mod+Shift+j move down 30px
+bindsym $mod+Shift+k move up 30px
+bindsym $mod+Shift+l move right 30px
+bindsym $mod+Shift+Left move left 30px
+bindsym $mod+Shift+Down move down 30px
+bindsym $mod+Shift+Up move up 30px
+bindsym $mod+Shift+Right move right 30px
+
+# ---------------------------
+# Resize windows
+# ---------------------------
 # mode "resize" {
 #     bindsym h resize shrink width 30 px or 30 ppt
 #     bindsym j resize grow height 30 px or 30 ppt
@@ -130,21 +83,66 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcu
 #     bindsym $mod+r mode "default"
 # }
 # bindsym $mod+r mode "resize"
+
 bindsym $mod+Ctrl+h resize shrink width 30 px or 30 ppt
-bindsym $mod+Ctrl+l resize grow   width 30 px or 30 ppt
-bindsym $mod+Ctrl+j resize grow   height 30 px or 30 ppt
+bindsym $mod+Ctrl+l resize grow width 30 px or 30 ppt
+bindsym $mod+Ctrl+j resize grow height 30 px or 30 ppt
 bindsym $mod+Ctrl+k resize shrink height 30 px or 30 ppt
 bindsym $mod+Ctrl+Left resize shrink width 30 px or 30 ppt
+bindsym $mod+Ctrl+Right resize grow width 30 px or 30 ppt
 bindsym $mod+Ctrl+Down resize grow height 30 px or 30 ppt
 bindsym $mod+Ctrl+Up resize shrink height 30 px or 30 ppt
-bindsym $mod+Ctrl+Right resize grow width 30 px or 30 ppt
 
-# i3-gaps
-for_window [class="^.*"] border pixel 2
-gaps inner 10
-gaps outer 2
+# ---------------------------
+# Window management
+# ---------------------------
+bindsym $mod+e layout toggle split
+bindsym $mod+v exec --no-startup-id i3-msg "split toggle"
+bindsym $mod+f fullscreen toggle
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+bindsym $mod+a focus parent
+bindsym $mod+q kill
 
-# Gaps mode
+# ---------------------------
+# Workspaces switching
+# ---------------------------
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+# ---------------------------
+# Move container to workspace
+# ---------------------------
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+# ---------------------------
+# Reload / restart / exit
+# ---------------------------
+bindsym $mod+Shift+c reload
+# bindsym $mod+Shift+r restart
+bindsym $mod+Shift+r exec --no-startup-id sh -c 'i3-msg restart && sleep 0.5 && ~/.config/i3/reload-colors-nvim.sh'
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+
+# ---------------------------
+# Gaps adjustment mode
+# ---------------------------
 set $mode_gaps Gaps: (o) outer, (i) inner
 set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
 set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
@@ -177,47 +175,53 @@ mode "$mode_gaps_outer" {
     bindsym Escape mode "default"
 }
 
-# Colors
-set_from_resource $fg i3wm.color7 #f0f0f0
-set_from_resource $ubg i3wm.color6 #f0f0f0
-set_from_resource $fbg i3wm.color2 #f0f0f0
+# ---------------------------
+# Mouse modifier
+# ---------------------------
+floating_modifier $mod
 
-client.focused          $fbg $fbg $fg $fbg $fbg
-client.focused_inactive $bg $bg $fg $bg $bg
-client.unfocused        $ubg $ubg $fg $ubg $ubg
-client.urgent           $bg $bg $fg $bg $bg
-client.placeholder      $bg $bg $fg $bg $bg
-client.background       $bg
+# ---------------------------
+# Autostart utilities
+# ---------------------------
+exec --no-startup-id nm-applet
+exec_always --no-startup-id tmux new-session -d -s preload # Avoid problem with first terminal
+exec_always --no-startup-id xss-lock ~/.config/i3/lock.sh
+exec_always --no-startup-id xset s 300 dpms 600 600 600
+exec_always --no-startup-id sh -c 'wal -q -i "$(find $HOME/Wallpapers -type f | shuf -n 1)"'
+exec_always picom -f
+exec_always --no-startup-id nvidia-settings -a "[dpy:4]/DigitalVibrance=512"
+exec_always --no-startup-id sh -c 'sleep 0.5 && ~/.config/dunst/launch.sh'
+exec_always --no-startup-id python3 ~/.config/i3/autotiling.py
+# exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+# exec_always wal -R
 
+# ---------------------------
+# Launch applications
+# ---------------------------
+bindsym $mod+Return exec --no-startup-id i3-sensible-terminal -e ~/.config/i3/tmux.sh
+bindsym $mod+d exec rofi -show drun -font 'Hack Nerd Font 12'
+
+# ---------------------------
+# Lock screen
+# ---------------------------
+bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/lock.sh
+
+# ---------------------------
+# Screenshot
+# ---------------------------
+bindsym $mod+Shift+s exec maim -s | xclip -selection clipboard -t image/png
+bindsym $mod+Shift+d exec maim -s | tee ~/Pictures/screen_$(date '+%Y-%m-%d_%H-%M-%S').png | xclip -selection clipboard -t image/png
+
+# ---------------------------
 # Color picker
+# ---------------------------
 bindsym $mod+c exec --no-startup-id sh -c 'xcolor | xclip -selection clipboard'
 
-# Polybar
-# exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-
-# Alt-tab
+# ---------------------------
+# Alt-Tab
+# ---------------------------
 set $i3t_alt_tab        $HOME/.config/i3/i3-alt-tab.py n
 set $i3t_alt_shift_tab  $HOME/.config/i3/i3-alt-tab.py p
 bindsym Mod1+Tab        exec $i3t_alt_tab
 bindsym Mod1+Shift+Tab  exec $i3t_alt_shift_tab
-
-# Wallpaper
-# exec_always feh --bg-fill --randomize $HOME/Wallpapers/
-exec_always --no-startup-id sh -c 'wal -q -i "$(find $HOME/Wallpapers -type f | shuf -n 1)"'
-
-# Picom
-exec_always picom -f
-
-# Pywal
-# exec_always wal -R
-
-# Vibrance for NVIDIA
-exec_always --no-startup-id nvidia-settings -a "[dpy:4]/DigitalVibrance=512"
-
-# Screenshot
-bindsym $mod+Shift+s exec maim -s | xclip -selection clipboard -t image/png
-bindsym $mod+Shift+d exec maim -s | tee ~/Pictures/screen_$(date '+%Y-%m-%d_%H-%M-%S').png | xclip -selection clipboard -t image/png
-
-# Notifications
-exec_always --no-startup-id sh -c 'sleep 0.5 && ~/.config/dunst/launch.sh'
 
