@@ -1,8 +1,7 @@
 #!/bin/bash
 
-SESSION=$(tmux new-session -dP)
+SESSION="session_$$"_temp
 
-tmux set-hook -t "$SESSION" client-detached "if -F '#{session_attached}' '' 'kill-session -t $SESSION'"
-
+tmux new-session -d -s "$SESSION"
 tmux attach-session -t "$SESSION"
 

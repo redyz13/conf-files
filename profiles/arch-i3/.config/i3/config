@@ -193,14 +193,15 @@ floating_modifier $mod
 # Autostart utilities
 # ---------------------------
 exec --no-startup-id nm-applet
-exec_always --no-startup-id tmux new-session -d -s preload # Avoid problem with first terminal
 exec_always --no-startup-id xss-lock ~/.config/i3/lock.sh
 exec_always --no-startup-id xset s 300 dpms 600 600 600
 exec_always --no-startup-id sh -c 'wal -q -i "$(find $HOME/Wallpapers -type f | shuf -n 1)"'
-exec_always picom -f
+exec_always --no-startup-id picom -f
 exec_always --no-startup-id nvidia-settings -a "[dpy:4]/DigitalVibrance=512"
 exec_always --no-startup-id sh -c 'sleep 0.5 && ~/.config/dunst/launch.sh'
 exec_always --no-startup-id python3 ~/.config/i3/autotiling.py
+exec --no-startup-id ~/.config/i3/tmux-watchdog.sh
+# exec_always --no-startup-id tmux new-session -d -s preload # Avoid problem with first terminal
 # exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 # exec_always wal -R
 
