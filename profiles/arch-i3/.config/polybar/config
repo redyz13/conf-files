@@ -29,9 +29,9 @@ padding-right = 1
 module-margin-left = 1
 module-margin-right = 1
 
-font-0 = Hack Nerd Font:size=14
+font-0 = Hack Nerd Font:size=13
 
-modules-left = pulseaudio brightness memory cpu
+modules-left = pulseaudio brightness ping memory cpu
 modules-center = date
 modules-right = filesystem battery
 
@@ -244,6 +244,17 @@ click-right = brightnessctl s 10%-
 click-left = brightnessctl s +10%
 scroll-up = brightnessctl s +5%
 scroll-down = brightnessctl s 5%-
+
+# ---------------------------
+# Module: Ping (ms)
+# ---------------------------
+[module/ping]
+type = custom/script
+exec = $HOME/.config/polybar/ping.sh
+interval = 2
+format-prefix = "ping: "
+format-prefix-foreground = ${xrdb:color2}
+label = %output%
 
 # ---------------------------
 # General Settings
