@@ -14,6 +14,12 @@ bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ to
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
 # ---------------------------
+# Brightness controls
+# ---------------------------
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +1% && refresh_i3status
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 1%- && refresh_i3status
+
+# ---------------------------
 # Workspace definitions
 # ---------------------------
 set $ws1 "1"
@@ -209,6 +215,7 @@ exec --no-startup-id ~/.config/i3/tmux-watchdog.sh
 # Launch applications
 # ---------------------------
 bindsym $mod+Return exec --no-startup-id i3-sensible-terminal -e ~/.config/i3/tmux.sh
+bindsym $mod+KP_Enter exec --no-startup-id i3-sensible-terminal -e ~/.config/i3/tmux.sh
 bindsym $mod+d exec rofi -show drun -font 'Hack Nerd Font 12'
 bindsym $mod+period exec "rofimoji --action type"
 
