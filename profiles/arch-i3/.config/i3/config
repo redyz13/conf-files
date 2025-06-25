@@ -210,6 +210,7 @@ exec --no-startup-id ~/.config/i3/tmux-watchdog.sh
 # ---------------------------
 bindsym $mod+Return exec --no-startup-id i3-sensible-terminal -e ~/.config/i3/tmux.sh
 bindsym $mod+d exec rofi -show drun -font 'Hack Nerd Font 12'
+bindsym $mod+period exec "rofimoji --action type"
 
 # ---------------------------
 # Lock screen

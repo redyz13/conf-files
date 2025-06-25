@@ -1,2 +1,6 @@
 @import "~/.cache/wal/colors-rofi-dark.rasi"
 
+* {
+  font: "Hack Nerd Font 14";
+}
+
