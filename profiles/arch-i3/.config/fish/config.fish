@@ -42,9 +42,8 @@ fm6000 -f ~/.cpath/cat.txt
 
 # General aliases
 alias ..='cd ..'
-alias ls='exa -ha'
-alias la='exa -alF'
-alias ll='exa -lha'
+alias ls='exa -alF'
+alias ll='exa -ha'
 alias vim='nvim'
 alias y='xclip -selection clipboard'
 

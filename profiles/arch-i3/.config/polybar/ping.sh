@@ -1,2 +1,7 @@
-ping -c 1 -W 1 1.1.1.1 2>/dev/null | awk -F'time=' ' /time=/{print $2}; END{if(NR==0) print "no conn"}'
+#!/bin/bash
+echo "..."
+while true; do
+    ping -c 1 -W 1 1.1.1.1 2>/dev/null | awk -F'time=' ' /time=/{print $2}; END{if(NR==0) print "no conn"}'
+    sleep 2
+done
 

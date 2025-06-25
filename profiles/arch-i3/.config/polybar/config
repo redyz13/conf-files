@@ -251,6 +251,7 @@ scroll-down = brightnessctl s 5%-
 [module/ping]
 type = custom/script
 exec = $HOME/.config/polybar/ping.sh
+tail = true
 interval = 2
 format-prefix = "ping: "
 format-prefix-foreground = ${xrdb:color2}
