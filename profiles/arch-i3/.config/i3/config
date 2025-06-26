@@ -243,3 +243,9 @@ set $i3t_alt_shift_tab  ~/.config/i3/i3-alt-tab.py p
 bindsym Mod1+Tab        exec $i3t_alt_tab
 bindsym Mod1+Shift+Tab  exec $i3t_alt_shift_tab
 
+# ---------------------------
+# Monitors
+# ---------------------------
+exec_always xrandr --output eDP-1 --mode 1920x1080 --primary --rate 120.00
+exec_always xrandr --output HDMI-1 --mode 1920x1080 --rate 60.00 --left-of eDP-1
+
