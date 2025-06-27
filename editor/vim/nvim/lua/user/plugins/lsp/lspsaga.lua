@@ -11,10 +11,18 @@ return {
           -- ui = {
           --   kind = require("catppuccin.groups.integrations.lsp_saga").custom_kind(),
           -- },
+
           symbol_in_winbar = {
             folder_level = 2,
           },
         })
+
+        -- Uncomment for transparency
+          vim.cmd([[
+            highlight WinBar guibg=NONE
+            highlight WinBarNC guibg=NONE
+          ]])
     end
 }
+
 
