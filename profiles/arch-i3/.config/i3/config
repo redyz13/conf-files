@@ -201,7 +201,8 @@ floating_modifier $mod
 exec --no-startup-id nm-applet
 exec_always --no-startup-id xss-lock ~/.config/i3/lock.sh
 exec_always --no-startup-id xset s 300 dpms 600 600 600
-exec_always --no-startup-id sh -c 'wal -q -i "$(find $HOME/Wallpapers -type f | shuf -n 1)"'
+# exec_always --no-startup-id sh -c 'sleep 0.2 && wal -q -i "$(find $HOME/Wallpapers -type f | shuf -n 1)"'
+exec_always --no-startup-id sh -c 'wal -q -i "$HOME/Wallpapers/Fundamentals Wpp.png"'
 exec_always --no-startup-id picom -f
 exec_always --no-startup-id nvidia-settings -a "[dpy:4]/DigitalVibrance=512"
 exec_always --no-startup-id nvidia-settings -a SyncToVBlank=0
@@ -243,6 +244,12 @@ set $i3t_alt_tab        ~/.config/i3/i3-alt-tab.py n
 set $i3t_alt_shift_tab  ~/.config/i3/i3-alt-tab.py p
 bindsym Mod1+Tab        exec $i3t_alt_tab
 bindsym Mod1+Shift+Tab  exec $i3t_alt_shift_tab
+
+# ---------------------------
+# Gaming
+# ---------------------------
+exec --no-startup-id joystickwake --cooldown 15 --loglevel info
+exec --no-startup-id ~/.config/i3/disable-touchpad-loop.sh
 
 # ---------------------------
 # Monitors
