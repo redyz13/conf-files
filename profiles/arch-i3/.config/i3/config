@@ -84,21 +84,6 @@ bindsym $mod+Shift+Right move right 30px
 # ---------------------------
 # Resize windows
 # ---------------------------
-# mode "resize" {
-#     bindsym h resize shrink width 30 px or 30 ppt
-#     bindsym j resize grow height 30 px or 30 ppt
-#     bindsym k resize shrink height 30 px or 30 ppt
-#     bindsym l resize grow width 30 px or 30 ppt
-#     bindsym Left resize shrink width 30 px or 30 ppt
-#     bindsym Down resize grow height 30 px or 30 ppt
-#     bindsym Up resize shrink height 30 px or 30 ppt
-#     bindsym Right resize grow width 30 px or 30 ppt
-#     bindsym Return mode "default"
-#     bindsym Escape mode "default"
-#     bindsym $mod+r mode "default"
-# }
-# bindsym $mod+r mode "resize"
-
 bindsym $mod+Ctrl+h resize shrink width 30 px or 30 ppt
 bindsym $mod+Ctrl+l resize grow width 30 px or 30 ppt
 bindsym $mod+Ctrl+j resize grow height 30 px or 30 ppt
@@ -151,7 +136,6 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 # Reload / restart / exit
 # ---------------------------
 bindsym $mod+Shift+c reload
-# bindsym $mod+Shift+r restart
 bindsym $mod+Shift+r exec --no-startup-id sh -c 'i3-msg restart && sleep 0.5 && ~/.config/i3/reload-colors-nvim.sh'
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
@@ -204,14 +188,10 @@ exec_always --no-startup-id xset s 300 dpms 600 600 600
 # exec_always --no-startup-id sh -c 'sleep 0.2 && wal -q -i "$(find $HOME/Wallpapers -type f | shuf -n 1)"'
 exec_always --no-startup-id sh -c 'wal -q -i "$HOME/Wallpapers/Fundamentals Wpp.png"'
 exec_always --no-startup-id picom -f
-exec_always --no-startup-id nvidia-settings -a "[dpy:4]/DigitalVibrance=512"
-exec_always --no-startup-id nvidia-settings -a SyncToVBlank=0
 exec_always --no-startup-id sh -c 'sleep 0.5 && ~/.config/dunst/launch.sh'
 exec_always --no-startup-id python3 ~/.config/i3/autotiling.py
 exec --no-startup-id ~/.config/i3/tmux-watchdog.sh
 exec_always --no-startup-id tmux new-session -d -s preload # Avoid problem with first terminal
-# exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-# exec_always wal -R
 
 # ---------------------------
 # Launch applications
@@ -250,6 +230,8 @@ bindsym Mod1+Shift+Tab  exec $i3t_alt_shift_tab
 # ---------------------------
 exec --no-startup-id joystickwake --cooldown 15 --loglevel info
 exec --no-startup-id ~/.config/i3/disable-touchpad-loop.sh
+exec_always --no-startup-id nvidia-settings -a "[dpy:4]/DigitalVibrance=512"
+exec_always --no-startup-id nvidia-settings -a SyncToVBlank=0
 
 # ---------------------------
 # Monitors
