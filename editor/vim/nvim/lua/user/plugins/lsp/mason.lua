@@ -28,6 +28,7 @@ return {
           "pyright",
         },
         automatic_installation = true,
+        automatic_enable = false,
       })
 
       mason_null_ls.setup({
@@ -38,6 +39,7 @@ return {
           "ruff",
         },
         automatic_installation = true,
+        automatic_enable = false,
       })
     end
 }
