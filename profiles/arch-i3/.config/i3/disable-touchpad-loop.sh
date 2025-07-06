@@ -1,9 +1,10 @@
 #!/bin/bash
 while true; do
-    id=$(xinput list | grep "Wireless Controller Touchpad" | awk '{print $6}' | cut -d'=' -f2)
-    if [[ -n "$id" ]]; then
+    ids=$(xinput list | grep -i "Touchpad" | grep -o 'id=[0-9]\+' | cut -d'=' -f2)
+    for id in $ids; do
         xinput disable "$id"
-    fi
+    done
     sleep 10
 done
+
 
