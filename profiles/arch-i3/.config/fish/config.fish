@@ -15,7 +15,6 @@ end
 # Color scheme via pywal
 wal -q -e -n -R
 cat "$HOME/.cache/wal/sequences" > /dev/null 2>&1 &
-cat "$HOME/.cache/wal/sequences"
 if test -f "$HOME/.cache/wal/colors-tty.sh"
     bash "$HOME/.cache/wal/colors-tty.sh"
 end
