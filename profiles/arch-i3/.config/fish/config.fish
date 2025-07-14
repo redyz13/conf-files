@@ -8,9 +8,6 @@ set -g fish_greeting
 # Tilde key
 bind -k npage 'commandline -a \~; commandline -f forward-char'
 
-# Run nvm
-nvm use lts > /dev/null
-
 if test -z "$DISPLAY"; and test "$XDG_VTNR" = "1"
     exec startx
 end
@@ -21,17 +18,6 @@ cat "$HOME/.cache/wal/sequences" > /dev/null 2>&1 &
 cat "$HOME/.cache/wal/sequences"
 if test -f "$HOME/.cache/wal/colors-tty.sh"
     bash "$HOME/.cache/wal/colors-tty.sh"
-end
-
-# Load tmux
-# if status  is-interactive
-# and not set -q TMUX
-#   exec tmux new-session -A -s "<3"
-# end
-
-# Source z
-if test -f "$HOME/.zpath/z.sh"
-    bash "$HOME/.zpath/z.sh"
 end
 
 # Cat
