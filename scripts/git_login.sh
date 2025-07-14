@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Change username and password
 USERNAME=""
 PASSWORD="" 
