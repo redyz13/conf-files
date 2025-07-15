@@ -103,7 +103,7 @@ return {
       --     },
       --   },
       -- },
-      -- highlights = {
+      highlights = {
     --     fill = {
     --       guifg = { attribute = "fg", highlight = "TabLine" },
     --       guibg = { attribute = "bg", highlight = "TabLine" },
@@ -182,11 +182,11 @@ return {
     --       guibg = { attribute = "bg", highlight = "TabLine" },
     --     },
     --
-    --     separator = {
-    --       guifg = { attribute = "bg", highlight = "TabLine" },
-    --       guibg = { attribute = "bg", highlight = "TabLine" },
-    --       fg = '#1e1e2e', -- Change based on theme,
-    --     },
+        separator = {
+          guifg = { attribute = "bg", highlight = "TabLine" },
+          guibg = { attribute = "bg", highlight = "TabLine" },
+          fg = '#000000', -- Change based on theme,
+        },
     --     separator_selected = {
     --       guifg = { attribute = "bg", highlight = "Normal" },
     --       guibg = { attribute = "bg", highlight = "Normal" },
@@ -201,7 +201,7 @@ return {
     --       guifg = { attribute = "fg", highlight = "LspDiagnosticsDefaultHint" },
     --       guibg = { attribute = "bg", highlight = "Normal" },
     --     },
-      -- },
+      },
     }
   end
 }
