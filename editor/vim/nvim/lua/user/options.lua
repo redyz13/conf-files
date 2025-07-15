@@ -1,4 +1,4 @@
-vim.g.my_colorscheme = "pywal"
+vim.g.my_colorscheme = "pywal16"
 
 local options = {
   undofile = true,                         -- enable persistent undo

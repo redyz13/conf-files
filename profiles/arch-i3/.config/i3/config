@@ -185,8 +185,8 @@ floating_modifier $mod
 exec --no-startup-id nm-applet
 exec_always --no-startup-id xss-lock ~/.config/i3/lock.sh
 exec_always --no-startup-id xset s 300 dpms 600 600 600
-# exec_always --no-startup-id sh -c 'sleep 0.2 && wal -q -i "$(find $HOME/Wallpapers -type f | shuf -n 1)"'
-exec_always --no-startup-id sh -c 'wal -q -i "$HOME/Wallpapers/Fundamentals Wpp.png"'
+exec_always --no-startup-id sh -c 'sleep 0.3 && wal -q -i "$(find $HOME/Wallpapers -type f | shuf -n 1)"'
+# exec_always --no-startup-id sh -c 'wal -q -i "$HOME/Wallpapers/angelpape.png"'
 exec_always --no-startup-id picom -f
 exec_always --no-startup-id sh -c 'sleep 0.5 && ~/.config/dunst/launch.sh'
 exec_always --no-startup-id python3 ~/.config/i3/autotiling.py
