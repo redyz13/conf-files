@@ -47,8 +47,6 @@ fi
 sudo ufw allow out on lo
 sudo ufw allow out to 127.0.0.1 port 53 proto udp
 sudo ufw allow out to 127.0.0.1 port 53 proto tcp
-sudo ufw deny out to any port 53 proto udp
-sudo ufw deny out to any port 53 proto tcp
 sudo ufw allow out to ::1 port 53 proto udp
 sudo ufw allow out to ::1 port 53 proto tcp
 sudo ufw deny out to any port 53 proto udp
