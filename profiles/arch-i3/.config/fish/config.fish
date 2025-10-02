@@ -21,7 +21,9 @@ end
 
 # Cat
 fish_add_path $HOME/.cpath
-fm6000 -f ~/.cpath/cat.txt
+if status is-interactive
+  fm6000 -f ~/.cpath/cat.txt
+end
 
 # Aliases
 
