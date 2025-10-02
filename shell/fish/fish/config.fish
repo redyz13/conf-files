@@ -15,7 +15,7 @@ end
 # fish_vi_key_bindings
 
 # Tilde key
-bind -k npage 'commandline -a \~; commandline -f forward-char'
+bind \e\[6\~ 'commandline -a \~; commandline -f forward-char'
 
 # Aliases
 alias vim='nvim'

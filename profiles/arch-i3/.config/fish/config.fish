@@ -6,7 +6,7 @@ end
 set -g fish_greeting
 
 # Tilde key
-bind -k npage 'commandline -a \~; commandline -f forward-char'
+bind \e\[6\~ 'commandline -a \~; commandline -f forward-char'
 
 if test -z "$DISPLAY"; and test "$XDG_VTNR" = "1"
     exec startx
