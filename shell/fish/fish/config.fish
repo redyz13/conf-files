@@ -36,7 +36,10 @@ alias aptpur='sudo apt purge'
 
 # Cat
 fish_add_path $HOME/.cpath
-fm6000 -c magenta -f ~/.cpath/cat.txt
+if status is-interactive
+  fm6000 -c magenta -f ~/.cpath/cat.txt
+end
+fish_add_path $HOME/.cpath
 
 # Java
 fish_add_path $HOME/Tools/jdk-19/bin
