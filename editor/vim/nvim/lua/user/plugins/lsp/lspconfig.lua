@@ -34,23 +34,22 @@ return {
 
     local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-    -- LSP servers (nuova API Neovim 0.11+)
-    vim.lsp.config("pyright", {
+    vim.lsp.enable("pyright", {
       on_attach = on_attach,
       capabilities = capabilities,
     })
 
-    vim.lsp.config("clangd", {
+    vim.lsp.enable("clangd", {
       on_attach = on_attach,
       capabilities = capabilities,
     })
 
-    vim.lsp.config("jdtls", {
+    vim.lsp.enable("jdtls", {
       on_attach = on_attach,
       capabilities = capabilities,
     })
 
-    vim.lsp.config("lua_ls", {
+    vim.lsp.enable("lua_ls", {
       on_attach = on_attach,
       capabilities = capabilities,
       settings = {
@@ -83,5 +82,4 @@ return {
     })
   end,
 }
-
 
