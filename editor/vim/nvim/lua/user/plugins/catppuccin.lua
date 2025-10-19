@@ -3,7 +3,7 @@ return {
   name = "catppuccin",
   priority = 1000,
   config = function()
-    if vim.g.my_colorscheme ~= "catppuccin" then return end
+    if vim.g.my_colorscheme ~= "catppuccin-mocha" then return end
     require("catppuccin").setup({
       flavour = "mocha", -- latte, frappe, macchiato, mocha
       background = { -- :h background
@@ -74,6 +74,7 @@ return {
         -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
       },
     })
-    vim.cmd([[colorscheme catppuccin-mocha]])
+    vim.cmd("colorscheme " .. vim.g.my_colorscheme)
   end,
 }
+
