@@ -45,10 +45,6 @@ return {
       capabilities = capabilities,
     })
 
-    vim.lsp.enable("jdtls", {
-      capabilities = capabilities,
-    })
-
     vim.lsp.enable("lua_ls", {
       capabilities = capabilities,
       settings = {
@@ -81,5 +77,4 @@ return {
     })
   end,
 }
-
 

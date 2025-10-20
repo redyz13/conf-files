@@ -26,6 +26,7 @@ return {
           "lua_ls",
           "clangd",
           "pyright",
+          "jdtls",
         },
         automatic_installation = true,
         automatic_enable = false,
