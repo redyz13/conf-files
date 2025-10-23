@@ -50,9 +50,11 @@ i3lock \
   --wrong-text="" \
   --verif-text="" \
 
-  (
+  while pgrep -x i3lock >/dev/null; do
     sleep 15
     if pgrep -x i3lock >/dev/null; then
       xset dpms force off
     fi
+  done
   ) &
+
