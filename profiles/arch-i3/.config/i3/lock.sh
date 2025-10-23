@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if pgrep -x i3lock >/dev/null; then
+  exit 0
+fi
+
 img="/tmp/screen_locked.png"
 blur="/tmp/screen_locked_blur.png"
 
@@ -46,3 +50,9 @@ i3lock \
   --wrong-text="" \
   --verif-text="" \
 
+  (
+    sleep 15
+    if pgrep -x i3lock >/dev/null; then
+      xset dpms force off
+    fi
+  ) &

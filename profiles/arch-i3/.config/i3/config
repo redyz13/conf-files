@@ -184,7 +184,7 @@ floating_modifier $mod
 # ---------------------------
 exec --no-startup-id nm-applet
 exec_always --no-startup-id xss-lock ~/.config/i3/lock.sh
-exec_always --no-startup-id xset s 300 dpms 600 600 600
+exec_always --no-startup-id xset s 120 dpms 0 0 0
 # exec_always --no-startup-id sh -c 'sleep 0.3 && wal -q -i "$(find $HOME/Wallpapers -type f | shuf -n 1)"'
 exec_always --no-startup-id sh -c 'wal -q -i "$HOME/Wallpapers/lain.jpg"'
 exec_always --no-startup-id picom -f
