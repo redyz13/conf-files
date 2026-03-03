@@ -8,7 +8,7 @@ set -euo pipefail
 # into a user-defined output directory.
 #
 # Usage:
-#   ./archlain-export-pkglist.sh <output_directory>
+#   ./export_pkglist.sh <output_directory>
 #
 # Generated files:
 # - pkglist-pacman.txt         (official repo packages)

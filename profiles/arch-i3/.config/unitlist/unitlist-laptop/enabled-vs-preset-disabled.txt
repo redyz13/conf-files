@@ -1,0 +1,12 @@
+UNIT FILE	STATE	PRESET
+bluetooth.service                            enabled         disabled
+dnscrypt-proxy.service                       enabled         disabled
+NetworkManager-dispatcher.service            enabled         disabled
+NetworkManager-wait-online.service           enabled         disabled
+NetworkManager.service                       enabled         disabled
+tlp.service                                  enabled         disabled
+ufw.service                                  enabled         disabled
+docker.socket                                enabled         disabled
+systemd-resolved-monitor.socket              enabled         disabled
+systemd-resolved-varlink.socket              enabled         disabled
+reflector.timer                              enabled         disabled
