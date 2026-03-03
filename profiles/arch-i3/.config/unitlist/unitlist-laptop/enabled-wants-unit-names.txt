@@ -1,0 +1,17 @@
+UNIT
+bluetooth.service
+dnscrypt-proxy.service
+docker.socket
+getty@tty1.service
+NetworkManager.service
+NetworkManager-wait-online.service
+reflector.timer
+remote-fs.target
+systemd-resolved-monitor.socket
+systemd-resolved.service
+systemd-resolved-varlink.socket
+systemd-timesyncd.service
+systemd-userdbd.socket
+tlp.service
+ufw.service
+wg-quick@wg0.service

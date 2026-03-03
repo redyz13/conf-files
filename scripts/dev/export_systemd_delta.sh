@@ -17,6 +17,8 @@ set -euo pipefail
 # - enabled-units.txt                (all enabled units)
 # - enabled-symlinks.txt             (enabled units via /etc/systemd/system symlinks)
 # - enabled-unit-names-from-symlinks.txt (unit names derived from symlinks, includes @instances)
+# - enabled-wants-symlinks.txt        (explicit enables via *.wants symlinks)
+# - enabled-wants-unit-names.txt      (unit names derived from *.wants symlinks)
 # - export-date.txt                  (ISO timestamp)
 # ==================================
 
@@ -63,6 +65,20 @@ HEADER="UNIT FILE$(printf '\t')STATE$(printf '\t')PRESET"
   find /etc/systemd/system -type l \( -name '*.service' -o -name '*.timer' -o -name '*.socket' -o -name '*.target' -o -name '*.path' -o -name '*.mount' -o -name '*.automount' \) \
     -printf '%f\n' | sort -u
 } > "$OUTDIR/enabled-unit-names-from-symlinks.txt"
+
+{
+  echo -e "SYMLINK\tTARGET"
+  find /etc/systemd/system -type l -regextype posix-extended \
+    -regex '.*/[^/]+\.wants/[^/]+\.(service|timer|socket|target|path|mount|automount)$' \
+    -printf '%p\t%l\n' | sort
+} > "$OUTDIR/enabled-wants-symlinks.txt"
+
+{
+  echo -e "UNIT"
+  find /etc/systemd/system -type l -regextype posix-extended \
+    -regex '.*/[^/]+\.wants/[^/]+\.(service|timer|socket|target|path|mount|automount)$' \
+    -printf '%f\n' | sort -u
+} > "$OUTDIR/enabled-wants-unit-names.txt"
 
 date -Iseconds > "$OUTDIR/export-date.txt"
 
