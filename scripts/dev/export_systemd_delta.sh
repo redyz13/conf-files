@@ -15,6 +15,8 @@ set -euo pipefail
 # - enabled-vs-preset-disabled.txt   (enabled but preset disabled)
 # - disabled-vs-preset-enabled.txt   (disabled but preset enabled)
 # - enabled-units.txt                (all enabled units)
+# - enabled-symlinks.txt             (enabled units via /etc/systemd/system symlinks)
+# - enabled-unit-names-from-symlinks.txt (unit names derived from symlinks, includes @instances)
 # - export-date.txt                  (ISO timestamp)
 # ==================================
 
@@ -49,6 +51,18 @@ HEADER="UNIT FILE$(printf '\t')STATE$(printf '\t')PRESET"
   echo -e "$HEADER"
   systemctl list-unit-files --no-pager | awk '$2=="disabled" && $3=="enabled"{print}'
 } > "$OUTDIR/disabled-vs-preset-enabled.txt"
+
+{
+  echo -e "SYMLINK\tTARGET"
+  find /etc/systemd/system -type l \( -name '*.service' -o -name '*.timer' -o -name '*.socket' -o -name '*.target' -o -name '*.path' -o -name '*.mount' -o -name '*.automount' \) \
+    -printf '%p\t%l\n' | sort
+} > "$OUTDIR/enabled-symlinks.txt"
+
+{
+  echo -e "UNIT"
+  find /etc/systemd/system -type l \( -name '*.service' -o -name '*.timer' -o -name '*.socket' -o -name '*.target' -o -name '*.path' -o -name '*.mount' -o -name '*.automount' \) \
+    -printf '%f\n' | sort -u
+} > "$OUTDIR/enabled-unit-names-from-symlinks.txt"
 
 date -Iseconds > "$OUTDIR/export-date.txt"
 
