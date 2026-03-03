@@ -4,6 +4,7 @@ i3lock-color
 joystickwake
 notion-app-electron
 pfetch
+python311
 spotify
 tmux-custom
 tmux-custom-debug

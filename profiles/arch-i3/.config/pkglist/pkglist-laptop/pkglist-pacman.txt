@@ -3,16 +3,17 @@ arch-install-scripts
 base
 base-devel
 bash-completion
+bind
 bluez
 bluez-utils
 brightnessctl
 btrbk
 btrfs-progs
 cava
-cloudflared
 cmatrix
 cowsay
 discord
+dnscrypt-proxy
 docker
 docker-compose
 dunst
@@ -52,6 +53,7 @@ noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
 ntfs-3g
+okular
 os-prober
 otf-font-awesome
 pavucontrol
@@ -70,6 +72,7 @@ python-pip
 python-pydbus
 python-pywal
 python-xlib
+python311
 qbittorrent
 ranger
 reflector
@@ -81,6 +84,7 @@ sof-firmware
 spotify
 steam
 sudo
+syncthing
 texlive-bin
 tlp
 tmux-custom
