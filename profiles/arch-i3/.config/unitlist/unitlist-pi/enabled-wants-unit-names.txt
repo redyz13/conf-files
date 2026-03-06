@@ -1,0 +1,15 @@
+UNIT
+dnscrypt-proxy.service
+getty@tty1.service
+net-heal.timer
+nftables.service
+remote-fs.target
+sshd.service
+systemd-networkd.service
+systemd-networkd.socket
+systemd-networkd-wait-online.service
+systemd-network-generator.service
+systemd-resolved.service
+systemd-timesyncd.service
+wg0-gate.service
+wg-quick@wg0.service
