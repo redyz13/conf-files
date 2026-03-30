@@ -1,0 +1,7 @@
+UNIT FILE	STATE	PRESET
+dnscrypt-proxy.service                       enabled         disabled
+nftables.service                             enabled         disabled
+sshd.service                                 enabled         disabled
+wg0-gate.service                             enabled         disabled
+systemd-networkd.socket                      enabled         disabled
+net-heal.timer                               enabled         disabled

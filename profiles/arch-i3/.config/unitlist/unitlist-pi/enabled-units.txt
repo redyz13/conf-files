@@ -1,0 +1,14 @@
+UNIT FILE	STATE	PRESET
+dnscrypt-proxy.service                       enabled         disabled
+getty@.service                               enabled         enabled
+nftables.service                             enabled         disabled
+sshd.service                                 enabled         disabled
+systemd-network-generator.service            enabled         enabled
+systemd-networkd-wait-online.service         enabled         enabled
+systemd-networkd.service                     enabled         enabled
+systemd-resolved.service                     enabled         enabled
+systemd-timesyncd.service                    enabled         enabled
+wg0-gate.service                             enabled         disabled
+systemd-networkd.socket                      enabled         disabled
+remote-fs.target                             enabled         enabled
+net-heal.timer                               enabled         disabled
