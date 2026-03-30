@@ -97,7 +97,11 @@ ufw
 unzip
 usbutils
 vlc
+vlc-plugin-ass
 vlc-plugin-ffmpeg
+vlc-plugin-freetype
+vlc-plugin-matroska
+vlc-plugin-srt
 vlc-plugin-x264
 w3m
 wget
