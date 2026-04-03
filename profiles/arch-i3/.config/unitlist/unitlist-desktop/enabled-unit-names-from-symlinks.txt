@@ -1,0 +1,16 @@
+UNIT
+autovt@.service
+bluetooth.service
+dbus-org.bluez.service
+dbus-org.freedesktop.nm-dispatcher.service
+dbus-org.freedesktop.timesync1.service
+dnscrypt-proxy.service
+docker.socket
+getty@tty1.service
+NetworkManager.service
+NetworkManager-wait-online.service
+reflector.timer
+remote-fs.target
+systemd-timesyncd.service
+systemd-userdbd.socket
+ufw.service

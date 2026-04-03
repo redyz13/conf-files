@@ -1,0 +1,16 @@
+SYMLINK	TARGET
+/etc/systemd/system/autovt@.service	/usr/lib/systemd/system/getty@.service
+/etc/systemd/system/bluetooth.target.wants/bluetooth.service	/usr/lib/systemd/system/bluetooth.service
+/etc/systemd/system/dbus-org.bluez.service	/usr/lib/systemd/system/bluetooth.service
+/etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service	/usr/lib/systemd/system/NetworkManager-dispatcher.service
+/etc/systemd/system/dbus-org.freedesktop.timesync1.service	/usr/lib/systemd/system/systemd-timesyncd.service
+/etc/systemd/system/getty.target.wants/getty@tty1.service	/usr/lib/systemd/system/getty@.service
+/etc/systemd/system/multi-user.target.wants/dnscrypt-proxy.service	/usr/lib/systemd/system/dnscrypt-proxy.service
+/etc/systemd/system/multi-user.target.wants/NetworkManager.service	/usr/lib/systemd/system/NetworkManager.service
+/etc/systemd/system/multi-user.target.wants/remote-fs.target	/usr/lib/systemd/system/remote-fs.target
+/etc/systemd/system/multi-user.target.wants/ufw.service	/usr/lib/systemd/system/ufw.service
+/etc/systemd/system/network-online.target.wants/NetworkManager-wait-online.service	/usr/lib/systemd/system/NetworkManager-wait-online.service
+/etc/systemd/system/sockets.target.wants/docker.socket	/usr/lib/systemd/system/docker.socket
+/etc/systemd/system/sockets.target.wants/systemd-userdbd.socket	/usr/lib/systemd/system/systemd-userdbd.socket
+/etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service	/usr/lib/systemd/system/systemd-timesyncd.service
+/etc/systemd/system/timers.target.wants/reflector.timer	/usr/lib/systemd/system/reflector.timer
