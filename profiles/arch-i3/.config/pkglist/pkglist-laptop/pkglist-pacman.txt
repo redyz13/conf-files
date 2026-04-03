@@ -58,6 +58,7 @@ os-prober
 otf-font-awesome
 pavucontrol
 pfetch
+phonon-qt6-mpv
 picom
 pipewire
 pipewire-alsa
@@ -96,13 +97,6 @@ ttf-opensans
 ufw
 unzip
 usbutils
-vlc
-vlc-plugin-ass
-vlc-plugin-ffmpeg
-vlc-plugin-freetype
-vlc-plugin-matroska
-vlc-plugin-srt
-vlc-plugin-x264
 w3m
 wget
 wireguard-tools
