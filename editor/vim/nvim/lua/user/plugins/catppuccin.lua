@@ -26,7 +26,7 @@ return {
         conditionals = { "italic" },
         loops = { "italic" },
         functions = { "italic" },
-        keywords = {},
+        keywords = {""},
         strings = {},
         variables = {},
         numbers = {},
@@ -77,4 +77,5 @@ return {
     vim.cmd("colorscheme " .. vim.g.my_colorscheme)
   end,
 }
+
 
