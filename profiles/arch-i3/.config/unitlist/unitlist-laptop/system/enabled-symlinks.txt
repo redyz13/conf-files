@@ -1,4 +1,5 @@
 SYMLINK	TARGET
+/etc/systemd/system/autovt@.service	/usr/lib/systemd/system/getty@.service
 /etc/systemd/system/bluetooth.target.wants/bluetooth.service	/usr/lib/systemd/system/bluetooth.service
 /etc/systemd/system/dbus-org.bluez.service	/usr/lib/systemd/system/bluetooth.service
 /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service	/usr/lib/systemd/system/NetworkManager-dispatcher.service

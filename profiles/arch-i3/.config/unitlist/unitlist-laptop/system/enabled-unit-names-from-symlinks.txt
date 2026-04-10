@@ -1,4 +1,5 @@
 UNIT
+autovt@.service
 bluetooth.service
 dbus-org.bluez.service
 dbus-org.freedesktop.nm-dispatcher.service

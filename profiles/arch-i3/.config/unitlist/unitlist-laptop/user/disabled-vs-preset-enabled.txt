@@ -1,0 +1,18 @@
+UNIT FILE	STATE	PRESET
+dbus-broker.service                          disabled  enabled
+filter-chain.service                         disabled  enabled
+gcr-ssh-agent.service                        disabled  enabled
+jack@.service                                disabled  enabled
+mpris-proxy.service                          disabled  enabled
+p11-kit-server.service                       disabled  enabled
+pipewire-pulse.service                       disabled  enabled
+pipewire.service                             disabled  enabled
+powerline-daemon.service                     disabled  enabled
+systemd-nspawn@.service                      disabled  enabled
+systemd-tmpfiles-setup.service               disabled  enabled
+systemd-vmspawn@.service                     disabled  enabled
+wireplumber@.service                         disabled  enabled
+gcr-ssh-agent.socket                         disabled  enabled
+ssh-agent.socket                             disabled  enabled
+machines.target                              disabled  enabled
+systemd-tmpfiles-clean.timer                 disabled  enabled
