@@ -1,4 +1,5 @@
 UNIT
+autovt@.service
 dbus-org.freedesktop.network1.service
 dbus-org.freedesktop.resolve1.service
 dbus-org.freedesktop.timesync1.service
