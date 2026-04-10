@@ -1,0 +1,6 @@
+FILE
+/home/redyz/.config/systemd/user/mango-dashboard.service
+/home/redyz/.config/systemd/user/mango-dashboard.timer
+/home/redyz/.config/systemd/user/wg-ddns-toggle.env
+/home/redyz/.config/systemd/user/wg-ddns-toggle.service
+/home/redyz/.config/systemd/user/wg-ddns-toggle.timer

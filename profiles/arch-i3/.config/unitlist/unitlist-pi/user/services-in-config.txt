@@ -1,0 +1,3 @@
+FILE
+/home/redyz/.config/systemd/user/mango-dashboard.service
+/home/redyz/.config/systemd/user/wg-ddns-toggle.service

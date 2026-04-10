@@ -1,0 +1,15 @@
+UNIT FILE	STATE	PRESET
+dbus-broker.service                                                                    disabled  enabled
+p11-kit-server.service                                                                 disabled  enabled
+podman-auto-update.service                                                             disabled  enabled
+podman-clean-transient.service                                                         disabled  enabled
+podman-kube@.service                                                                   disabled  enabled
+podman.service                                                                         disabled  enabled
+systemd-nspawn@.service                                                                disabled  enabled
+systemd-tmpfiles-setup.service                                                         disabled  enabled
+systemd-vmspawn@.service                                                               disabled  enabled
+podman.socket                                                                          disabled  enabled
+ssh-agent.socket                                                                       disabled  enabled
+machines.target                                                                        disabled  enabled
+podman-auto-update.timer                                                               disabled  enabled
+systemd-tmpfiles-clean.timer                                                           disabled  enabled
