@@ -1,5 +1,5 @@
 UNIT FILE	STATE	PRESET
-podman-restart.service                                                                 enabled   enabled
-p11-kit-server.socket                                                                  enabled   enabled
-mango-dashboard.timer                                                                  enabled   enabled
-wg-ddns-toggle.timer                                                                   enabled   enabled
+podman-restart.service                                                                    enabled   enabled
+p11-kit-server.socket                                                                     enabled   enabled
+mango-dashboard.timer                                                                     enabled   enabled
+wg-ddns-toggle.timer                                                                      enabled   enabled
