@@ -40,5 +40,5 @@ local function show_history()
     mp.osd_message(output, 5)
 end
 
-mp.add_key_binding("H", "show-sub-history", show_history)
+mp.add_key_binding("h", "show-sub-history", show_history)
 
