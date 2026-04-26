@@ -1,3 +1,4 @@
+electron40-bin
 gotop-bin
 i3-swallow-custom
 i3lock-color

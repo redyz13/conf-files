@@ -23,6 +23,7 @@ feh
 firefox
 fish
 git
+gnome-themes-extra
 gotop-bin
 grub
 gvim
