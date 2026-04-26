@@ -12,6 +12,7 @@ systemd-nspawn@.service                      disabled  enabled
 systemd-tmpfiles-setup.service               disabled  enabled
 systemd-vmspawn@.service                     disabled  enabled
 wireplumber@.service                         disabled  enabled
+xdg-desktop-portal-rewrite-launchers.service disabled  enabled
 gcr-ssh-agent.socket                         disabled  enabled
 ssh-agent.socket                             disabled  enabled
 machines.target                              disabled  enabled
