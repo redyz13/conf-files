@@ -32,7 +32,7 @@ end
 
 # General aliases
 alias ..='cd ..'
-alias ls='exa -alF'
+alias ls='exa -al --classify=auto'
 alias ll='exa -ha'
 alias vim='nvim'
 alias y='xclip -selection clipboard'
