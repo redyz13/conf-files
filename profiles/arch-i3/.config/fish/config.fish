@@ -38,7 +38,7 @@ alias vim='nvim'
 alias y='xclip -selection clipboard'
 
 # Pacman
-alias update-all='sudo pacman -Syuu'
+alias update-all='sudo pacman -Syu'
 alias cleanup='sudo pacman -Rns (pacman -Qtdq)'
 function pkgdiff; test (count $argv) -ge 1; or begin; echo "Usage: pkgdiff <file>"; return 1; end; diff -u (sort -u $argv[1] | psub) (pacman -Qqe | sort -u | psub); end
 function aurdiff; test (count $argv) -ge 1; or begin; echo "Usage: aurdiff <file>"; return 1; end; diff -u (sort -u $argv[1] | psub) (pacman -Qqm | sort -u | psub); end
