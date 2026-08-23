@@ -1,5 +1,6 @@
 alacritty
 arch-install-scripts
+asciiquarium
 base
 base-devel
 bash-completion
@@ -39,6 +40,7 @@ linux
 linux-firmware-intel
 linux-firmware-realtek
 linux-firmware-whence
+lua51-socket
 lxappearance
 maim
 man-db
@@ -98,6 +100,7 @@ ttf-opensans
 ufw
 unzip
 usbutils
+vesktop
 w3m
 wget
 wireguard-tools
@@ -114,5 +117,4 @@ xorg-xinput
 xorg-xrandr
 xss-lock
 yay
-yay-debug
 zip

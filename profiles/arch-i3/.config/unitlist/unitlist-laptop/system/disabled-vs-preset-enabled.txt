@@ -13,6 +13,8 @@ systemd-tpm2-clear.service                   disabled        enabled
 systemd-journald-audit.socket                disabled        enabled
 systemd-mountfsd.socket                      disabled        enabled
 systemd-nsresourced.socket                   disabled        enabled
+systemd-report-basic.socket                  disabled        enabled
+systemd-report-cgroup.socket                 disabled        enabled
 machines.target                              disabled        enabled
 reboot.target                                disabled        enabled
 remote-cryptsetup.target                     disabled        enabled

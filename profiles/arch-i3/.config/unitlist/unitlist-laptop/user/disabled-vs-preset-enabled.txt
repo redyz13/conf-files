@@ -15,5 +15,6 @@ wireplumber@.service                         disabled  enabled
 xdg-desktop-portal-rewrite-launchers.service disabled  enabled
 gcr-ssh-agent.socket                         disabled  enabled
 ssh-agent.socket                             disabled  enabled
+systemd-storage-fs.socket                    disabled  enabled
 machines.target                              disabled  enabled
 systemd-tmpfiles-clean.timer                 disabled  enabled
