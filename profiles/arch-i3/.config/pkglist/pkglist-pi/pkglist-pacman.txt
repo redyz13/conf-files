@@ -33,7 +33,6 @@ rsync
 sl
 slirp4netns
 sudo
-tmux-custom
 tree
 unzip
 usbutils
@@ -44,4 +43,3 @@ wireguard-tools
 wireless-regdb
 wireless_tools
 wpa_supplicant
-yay
