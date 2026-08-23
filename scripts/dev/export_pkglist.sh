@@ -31,11 +31,11 @@ mkdir -p "$OUTDIR"
 
 echo "→ Exporting package lists to: $OUTDIR"
 
-# Export official repository packages
-pacman -Qqe > "$OUTDIR/pkglist-pacman.txt"
+# Export explicitly installed official repository packages
+pacman -Qqen > "$OUTDIR/pkglist-pacman.txt"
 
-# Export AUR / foreign packages
-pacman -Qqm > "$OUTDIR/pkglist-aur.txt"
+# Export explicitly installed AUR / foreign packages
+pacman -Qqem > "$OUTDIR/pkglist-aur.txt"
 
 # Export full package list with versions (debug / snapshot)
 pacman -Q > "$OUTDIR/pkglist-with-versions.txt"
@@ -48,4 +48,3 @@ date -Iseconds > "$OUTDIR/export-date.txt"
 echo "Export completed successfully."
 echo "Files generated:"
 ls -1 "$OUTDIR"
-
