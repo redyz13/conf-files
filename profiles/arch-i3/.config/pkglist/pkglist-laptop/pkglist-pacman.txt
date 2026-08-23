@@ -94,6 +94,7 @@ tlp
 tmux-custom
 tmux-custom-debug
 tree
+tree-sitter-cli
 ttf-dejavu
 ttf-hack-nerd
 ttf-opensans
