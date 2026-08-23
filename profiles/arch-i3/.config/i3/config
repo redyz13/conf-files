@@ -7,17 +7,16 @@ font pango:Hack Nerd Font 14
 # ---------------------------
 # Volume controls (PulseAudio)
 # ---------------------------
-set $refresh_i3status killall -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +1% && $refresh_i3status
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -1% && $refresh_i3status
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +1%
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -1%
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
 # ---------------------------
 # Brightness controls
 # ---------------------------
-bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +1% && refresh_i3status
-bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 1%- && refresh_i3status
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +1%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 1%-
 
 # ---------------------------
 # Workspace definitions
@@ -36,6 +35,7 @@ set $ws10 "10"
 # ---------------------------
 # Color variables
 # ---------------------------
+set_from_resource $bg i3wm.color0 #000000
 set_from_resource $fg i3wm.color7 #f0f0f0
 set_from_resource $ubg i3wm.color6 #f0f0f0
 set_from_resource $fbg i3wm.color2 #f0f0f0
@@ -202,6 +202,7 @@ bindsym $mod+KP_Enter exec --no-startup-id i3-sensible-terminal -e ~/.config/i3/
 bindsym $mod+d exec rofi -show drun -font 'Hack Nerd Font 12'
 bindsym $mod+period exec "rofimoji --action type"
 bindsym $mod+Shift+p exec --no-startup-id ~/.config/i3/power_saving.sh
+bindsym $mod+Shift+m exec --no-startup-id ~/.config/i3/tv_mode.sh
 
 # ---------------------------
 # Lock screen
