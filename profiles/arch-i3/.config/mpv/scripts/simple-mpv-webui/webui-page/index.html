@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="author" content="Fabio Ambauen">
+  <title>Mango MPV</title>
+
+  <link rel="apple-touch-icon" sizes="180x180" href="static/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="static/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="static/favicons/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="static/favicons/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="static/favicons/android-chrome-512x512.png">
+  <link rel="manifest" href="static/favicons/site.webmanifest" crossorigin="use-credentials">
+  <link rel="shortcut icon" href="static/favicons/favicon.ico">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+
+  <link rel="stylesheet" type="text/css" href="webui.css">
+  <link rel="stylesheet" href="static/fontawesome-free/css/all.min.css">
+</head>
+
+<body>
+  <!-- Compatibility hooks used by upstream webui.js / MediaSession.
+       We deliberately do not show music-centric Artist/Album fields in the movie UI. -->
+  <div class="compat-metadata" aria-hidden="true">
+    <span id="artist"></span>
+    <span id="album"></span>
+  </div>
+
+  <!-- Playlist overlay -->
+  <div id="playlist-overlay" class="overlay">
+    <div class="overlay-panel overlay-panel-wide">
+      <div class="overlay-heading">
+        <div>
+          <div class="eyebrow">QUEUE</div>
+          <h4>Playlist</h4>
+        </div>
+        <div onClick="toggleOverlay('playlist-overlay')" class="overlay-close unselectable" title="Close playlist">
+          <i class="fas fa-times"></i>
+        </div>
+      </div>
+
+      <div class="playlist-actions">
+        <div onClick="send('toggle_pause')" class="button unselectable green content icon-content playPauseButton playlist-controls" title="Play / Pause">
+          <i class="fas fa-play"></i><i class="fas fa-pause"></i>
+        </div>
+        <div onClick="toggleOverlay('uri-loader-overlay')" class="button unselectable gray content icon-content playlist-controls" title="Add media">
+          <i class="fas fa-plus"></i>
+        </div>
+        <div onClick="playlist_loop_cycle()" class="button unselectable blue content icon-content playlist-controls playlistLoopButton" title="Cycle loop mode">
+          <i class="fas fa-redo-alt"></i>
+        </div>
+        <div onClick="send('playlist_shuffle')" class="button unselectable blue content icon-content playlist-controls" title="Shuffle">
+          <i class="fas fa-random"></i>
+        </div>
+        <div onClick="send('quit')" class="button unselectable red content icon-content playlist-controls" title="Quit MPV">
+          <i class="fas fa-power-off"></i>
+        </div>
+      </div>
+
+      <div id="playlist"></div>
+    </div>
+  </div>
+
+  <!-- Settings overlay -->
+  <div id="settings-overlay" class="overlay">
+    <div class="overlay-panel">
+      <div class="overlay-heading">
+        <div>
+          <div class="eyebrow">REMOTE</div>
+          <h4>Settings</h4>
+        </div>
+        <div class="overlay-heading-actions">
+          <div onClick="toggleOverlay('shortcuts-overlay')" class="overlay-tool keyboard-button unselectable" title="Keyboard shortcuts">
+            <i class="far fa-keyboard"></i>
+          </div>
+          <div onClick="toggleOverlay('settings-overlay')" class="overlay-close unselectable" title="Close settings">
+            <i class="fas fa-times"></i>
+          </div>
+        </div>
+      </div>
+
+      <table id="settings-table">
+        <tr>
+          <td>
+            <input class="tgl tgl-light" type="checkbox" value="1" id="disableNotifications" name="disableNotifications"/>
+            <label class="tgl-btn" for="disableNotifications"></label>
+          </td>
+          <td>
+            <strong>MediaSession</strong>
+            <span class="setting-description">Disable browser media notifications and lock-screen controls.</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="number" value="10" id="seekSeconds" name="seekSeconds"/>
+            <label for="seekSeconds"></label>
+          </td>
+          <td>
+            <strong>Seek step</strong>
+            <span class="setting-description">Seconds jumped by the back / forward controls.</span>
+          </td>
+        </tr>
+      </table>
+
+      <a class="repo-link" href="https://github.com/open-dynaMIX/simple-mpv-webui" target="_blank" rel="noreferrer" title="simple-mpv-webui on GitHub">
+        <i class="fab fa-github"></i>
+        <span>simple-mpv-webui</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Keyboard shortcuts overlay -->
+  <div id="shortcuts-overlay" class="overlay">
+    <div class="overlay-panel">
+      <div class="overlay-heading">
+        <div>
+          <div class="eyebrow">KEYBOARD</div>
+          <h4>Shortcuts</h4>
+        </div>
+        <div onClick="toggleOverlay('shortcuts-overlay')" class="overlay-close unselectable" title="Close shortcuts">
+          <i class="fas fa-times"></i>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table id="shortcuts-table">
+          <tr>
+            <td><b class="fas fa-keyboard"></b></td>
+            <td>Action</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- URI loader overlay -->
+  <div id="uri-loader-overlay" class="overlay">
+    <div class="overlay-panel">
+      <div class="overlay-heading">
+        <div>
+          <div class="eyebrow">PLAYLIST</div>
+          <h4>Add media</h4>
+        </div>
+        <div onClick="toggleOverlay('uri-loader-overlay')" class="overlay-close unselectable" title="Close">
+          <i class="fas fa-times"></i>
+        </div>
+      </div>
+
+      <form onsubmit="uriLoader('append-play'); return false;" class="uri-loader-form">
+        <label for="uri-loader-input">
+          <input type="text" id="uri-loader-input" placeholder="File path or URI">
+        </label>
+        <div class="uri-actions">
+          <div onClick="uriLoader('append-play')" class="button unselectable green icon-content playlist-controls">
+            <i class="fa fa-play-circle"></i><span>Play now</span>
+          </div>
+          <div onClick="uriLoader('append')" class="button unselectable blue icon-content playlist-controls">
+            <i class="fa fa-plus-circle"></i><span>Queue</span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="page-header">
+    <div class="topbar">
+      <div class="brand">
+        <img class="logo" src="static/favicons/android-chrome-192x192.png" alt="">
+        <div>
+          <div class="brand-name">Mango MPV</div>
+          <div class="brand-subtitle">Remote control</div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="burger">
+          <a href="#" onClick="toggleOverlay('playlist-overlay'); return false;" title="Show playlist">
+            <i class="fas fa-list-ul"></i>
+          </a>
+        </div>
+        <div class="info">
+          <a href="#" onClick="toggleOverlay('settings-overlay'); return false;" title="Show settings">
+            <i class="fas fa-cog"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="media-card card">
+      <div class="eyebrow">NOW PLAYING</div>
+      <h1 id="title">No media loaded</h1>
+    </div>
+  </header>
+
+  <main class="remote">
+    <!-- Timeline -->
+    <section class="card timeline-card">
+      <div class="section-heading">
+        <span><i class="far fa-clock"></i> Timeline</span>
+        <span class="section-hint" id="position">00:00:00</span>
+      </div>
+
+      <div class="slidecontainer">
+        <input type="range" min="0" max="0" value="0" step="any" class="slider" id="mediaPosition" list="chapters">
+        <datalist id="chapters"></datalist>
+        <div class="sliderInfoContainer">
+          <div class="left" id="remaining">—</div>
+          <div class="sliderCenter">Position</div>
+          <div class="right" id="duration">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main transport -->
+    <section class="card transport-card">
+      <div class="transport-main-grid">
+        <div onClick="seek(-1)" class="button unselectable blue transport-button" title="Seek back (ArrowLeft)">
+          <div class="content icon-content">
+            <i class="fas fa-backward"></i>
+            <span>Back</span>
+          </div>
+        </div>
+
+        <div onClick="send('toggle_pause')" class="button unselectable green transport-play" title="Play/Pause (Space)">
+          <div class="content icon-content playPauseButton">
+            <i class="fas fa-play"></i><i class="fas fa-pause"></i>
+          </div>
+        </div>
+
+        <div onClick="seek(1)" class="button unselectable blue transport-button" title="Seek forward (ArrowRight)">
+          <div class="content icon-content">
+            <span>Forward</span>
+            <i class="fas fa-forward"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="transport-secondary">
+        <div onClick="send('playlist_prev')" class="button unselectable gray" title="Previous playlist (p)">
+          <div class="content icon-content">
+            <i class="fas fa-fast-backward"></i><span>Previous</span>
+          </div>
+        </div>
+
+        <div onClick="send('playlist_next')" class="button unselectable gray" title="Next playlist (n)">
+          <div class="content icon-content">
+            <span>Next</span><i class="fas fa-fast-forward"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="transport-secondary chapter">
+        <div onClick="send('add_chapter', '-1')" class="button unselectable gray" title="Previous chapter">
+          <div class="content icon-content">
+            <i class="fas fa-step-backward"></i><span>Previous chapter</span>
+          </div>
+        </div>
+
+        <div onClick="send('add_chapter', '1')" class="button unselectable gray" title="Next chapter">
+          <div class="content icon-content">
+            <span>Next chapter</span><i class="fas fa-step-forward"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="two-column-grid">
+      <!-- Volume -->
+      <section class="card">
+        <div class="section-heading">
+          <span><i class="fas fa-volume-up"></i> Volume</span>
+          <span class="section-hint" id="volume">—</span>
+        </div>
+
+        <div class="slidecontainer">
+          <input type="range" min="0" max="130" value="100" step=".1" class="slider" id="mediaVolume">
+          <div class="sliderInfoContainer sliderVolume">
+            <div class="left sliderVolume"><i class="fas fa-volume-down"></i></div>
+            <div class="sliderCenter">Volume</div>
+            <div class="right"><i class="fas fa-volume-up"></i></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tracks -->
+      <section class="card">
+        <div class="section-heading">
+          <span><i class="fas fa-language"></i> Tracks</span>
+        </div>
+
+        <div class="track-grid">
+          <div onClick="send('cycle_sub')" class="button unselectable violet track-button" title="Cycle subtitles (j)">
+            <div id="nextSub" class="content text-content">
+              Next sub
+            </div>
+          </div>
+
+          <div onClick="send('cycle_audio')" class="button unselectable violet track-button" title="Cycle audio">
+            <div id="nextAudio" class="content text-content">
+              Next audio
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="two-column-grid">
+      <!-- Playback details -->
+      <section class="card">
+        <div class="section-heading">
+          <span><i class="fas fa-info-circle"></i> Playback</span>
+        </div>
+
+        <div class="table">
+          <table class="prop-table">
+            <tr>
+              <td>Speed</td>
+              <td id="speed">—</td>
+            </tr>
+            <tr>
+              <td>Subtitle delay</td>
+              <td id="sub-delay">—</td>
+            </tr>
+            <tr>
+              <td>Audio delay</td>
+              <td id="audio-delay">—</td>
+            </tr>
+            <tr class="chapter">
+              <td>Chapter</td>
+              <td id="chapterContent">—</td>
+            </tr>
+            <tr class="start">
+              <td>Start</td>
+              <td id="startContent">—</td>
+            </tr>
+            <tr class="end">
+              <td>End</td>
+              <td id="endContent">—</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- Speed -->
+      <section class="card">
+        <div class="section-heading">
+          <span><i class="fas fa-tachometer-alt"></i> Speed</span>
+        </div>
+
+        <div class="speed-grid">
+          <div onClick="send('speed_adjust', '0.9091')" class="button unselectable blue" title="Slower playback speed ([)">
+            <div class="content text-content">Slower</div>
+          </div>
+
+          <div onClick="send('speed_set')" class="button unselectable gray" title="Normal playback speed (Backspace)">
+            <div class="content text-content">1.00×</div>
+          </div>
+
+          <div onClick="send('speed_adjust', '1.1')" class="button unselectable blue" title="Faster playback speed (])">
+            <div class="content text-content">Faster</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="two-column-grid">
+      <!-- Synchronization -->
+      <section class="card">
+        <div class="section-heading">
+          <span><i class="fas fa-wave-square"></i> Sync</span>
+        </div>
+
+        <div class="sync-grid">
+          <div onClick="send('add_sub_delay', '-0.05')" class="button unselectable yellow">
+            <div class="content text-content">Sub −</div>
+          </div>
+
+          <div onClick="send('add_sub_delay', '0.05')" class="button unselectable yellow">
+            <div class="content text-content">Sub +</div>
+          </div>
+
+          <div onClick="send('add_audio_delay', '-0.05')" class="button unselectable yellow">
+            <div class="content text-content">Audio −</div>
+          </div>
+
+          <div onClick="send('add_audio_delay', '0.05')" class="button unselectable yellow">
+            <div class="content text-content">Audio +</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Output -->
+      <section class="card">
+        <div class="section-heading">
+          <span><i class="fas fa-desktop"></i> Output</span>
+        </div>
+
+        <div class="output-grid">
+          <div onClick="send('fullscreen')" class="button unselectable gray" title="Toggle fullscreen (f)">
+            <div id="fullscreenButton" class="content text-content">
+              Fullscreen
+            </div>
+          </div>
+
+          <div onClick="send('cycle_audio_device')" class="button unselectable gray">
+            <div class="content text-content">
+              Audio device
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span>Mango MPV Remote</span>
+    <span class="dot">•</span>
+    <span>simple-mpv-webui</span>
+  </footer>
+
+  <audio id="audio" src="static/audio/silence.mp3" loop></audio>
+
+  <!-- Upstream application logic, kept verbatim. -->
+  <script src="webui.js"></script>
+</body>
+</html>
