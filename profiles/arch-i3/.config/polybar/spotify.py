@@ -29,8 +29,14 @@ def read_current_metadata():
         print("spotify closed", flush=True)
 
 
-def on_properties_changed(interface, changed, invalidated):
+def on_properties_changed(interface, changed, invalidated, sender=None):
     if interface != PLAYER:
+        return
+
+    try:
+        if sender != bus.get_name_owner(SERVICE):
+            return
+    except dbus.DBusException:
         return
 
     if "Metadata" in changed:
@@ -56,6 +62,7 @@ bus.add_signal_receiver(
     signal_name="PropertiesChanged",
     dbus_interface=PROPERTIES,
     path=PATH,
+    sender_keyword="sender",
 )
 
 bus.add_signal_receiver(
