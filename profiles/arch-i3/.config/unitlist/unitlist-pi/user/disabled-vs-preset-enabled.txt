@@ -10,6 +10,7 @@ systemd-tmpfiles-setup.service                                                  
 systemd-vmspawn@.service                                                                  disabled  enabled
 podman.socket                                                                             disabled  enabled
 ssh-agent.socket                                                                          disabled  enabled
+systemd-storage-fs.socket                                                                 disabled  enabled
 machines.target                                                                           disabled  enabled
 podman-auto-update.timer                                                                  disabled  enabled
 systemd-tmpfiles-clean.timer                                                              disabled  enabled

@@ -4,6 +4,7 @@ base-devel
 bash-completion
 bind
 btrbk
+cowsay
 dhcpcd
 dialog
 dnscrypt-proxy
@@ -13,7 +14,11 @@ firmware-raspberrypi
 fish
 fuse-overlayfs
 git
+jq
 linux-rpi
+man-db
+man-pages
+mkvtoolnix-cli
 nano
 ncdu
 net-tools
