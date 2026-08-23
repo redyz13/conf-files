@@ -37,14 +37,15 @@ set $ws10 "10"
 # ---------------------------
 set_from_resource $bg i3wm.color0 #000000
 set_from_resource $fg i3wm.color7 #f0f0f0
-set_from_resource $ubg i3wm.color6 #f0f0f0
-set_from_resource $fbg i3wm.color2 #f0f0f0
+set_from_resource $ubg i3wm.color8 #808080
+set_from_resource $fibg i3wm.color1 #a0a0a0
+set_from_resource $fbg i3wm.color4 #ffffff
 
 # ---------------------------
 # Window colors
 # ---------------------------
 client.focused          $fbg $fbg $fg $fbg $fbg
-client.focused_inactive $bg $bg $fg $bg $bg
+client.focused_inactive $fibg $fibg $fg $fibg $fibg
 client.unfocused        $ubg $ubg $fg $ubg $ubg
 client.urgent           $bg $bg $fg $bg $bg
 client.placeholder      $bg $bg $fg $bg $bg
