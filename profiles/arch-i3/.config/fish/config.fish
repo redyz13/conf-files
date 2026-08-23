@@ -15,10 +15,8 @@ if test -z "$DISPLAY"; and test "$XDG_VTNR" = "1"
     exec startx
 end
 
-# Color scheme via pywal
-wal -q -e -n -R
-cat "$HOME/.cache/wal/sequences" > /dev/null 2>&1 &
-if test -f "$HOME/.cache/wal/colors-tty.sh"
+# Color scheme via pywal for Linux TTY
+if test "$TERM" = linux; and test -f "$HOME/.cache/wal/colors-tty.sh"
     bash "$HOME/.cache/wal/colors-tty.sh"
 end
 
@@ -51,8 +49,8 @@ alias aptins='sudo apt install'
 alias aptrmv='sudo apt remove'
 alias aptpur='sudo apt purge'
 
-# Run nvm
-nvm use lts > /dev/null
+# nvm.fish: on a new machine run:
+# set --universal nvm_default_version lts
 
 # Sashimi
 function fish_prompt
