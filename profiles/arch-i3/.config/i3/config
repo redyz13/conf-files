@@ -192,6 +192,7 @@ exec_always --no-startup-id picom -f
 exec_always --no-startup-id sh -c 'sleep 0.5 && ~/.config/dunst/launch.sh'
 exec_always --no-startup-id python3 ~/.config/i3/autotiling.py
 exec --no-startup-id ~/.config/i3/tmux-watchdog.sh
+exec --no-startup-id ~/.config/i3/display-watch.sh
 exec_always --no-startup-id tmux new-session -d -s preload # Avoid problem with first terminal
 exec --no-startup-id bash -c 'cat /proc/acpi/button/lid/*/state >/dev/null 2>&1' # Avoid problem with first lid closure
 
@@ -238,8 +239,17 @@ exec_always --no-startup-id nvidia-settings -a "[dpy:4]/DigitalVibrance=512"
 exec_always --no-startup-id nvidia-settings -a SyncToVBlank=0
 
 # ---------------------------
-# Monitors
+# Display mode
 # ---------------------------
-exec_always xrandr --output eDP-1 --mode 1920x1080 --primary --rate 120.00
-exec_always xrandr --output HDMI-1 --mode 1920x1080 --rate 60.00 --left-of eDP-1
+set $mode_display Display: (a) auto, (l) left, (r) right, (m) mirror, (t) TV
+bindsym $mod+Ctrl+d mode "$mode_display"
 
+mode "$mode_display" {
+    bindsym a exec --no-startup-id ~/.config/i3/display_apply.sh auto, mode "default"
+    bindsym l exec --no-startup-id ~/.config/i3/display_apply.sh left, mode "default"
+    bindsym r exec --no-startup-id ~/.config/i3/display_apply.sh right, mode "default"
+    bindsym m exec --no-startup-id ~/.config/i3/display_apply.sh mirror, mode "default"
+    bindsym t exec --no-startup-id ~/.config/i3/tv_mode.sh, mode "default"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}

@@ -25,16 +25,12 @@ firefox
 fish
 git
 gnome-themes-extra
-gotop-bin
 grub
 gvim
 htop
-i3-swallow-custom
 i3-wm
-i3lock-color
 inotify-tools
 jdk21-openjdk
-joystickwake
 less
 linux
 linux-firmware-intel
@@ -51,7 +47,6 @@ ncdu
 neovim
 network-manager-applet
 networkmanager
-notion-app-electron
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
@@ -60,8 +55,6 @@ okular
 os-prober
 otf-font-awesome
 pavucontrol
-pfetch
-phonon-qt6-mpv
 picom
 pipewire
 pipewire-alsa
@@ -76,7 +69,6 @@ python-pip
 python-pydbus
 python-pywal
 python-xlib
-python311
 qbittorrent
 ranger
 reflector
@@ -85,14 +77,11 @@ rofi
 rofimoji
 sl
 sof-firmware
-spotify
 steam
 sudo
 syncthing
 texlive-bin
 tlp
-tmux-custom
-tmux-custom-debug
 tree
 tree-sitter-cli
 ttf-dejavu
@@ -101,7 +90,6 @@ ttf-opensans
 ufw
 unzip
 usbutils
-vesktop
 w3m
 wget
 wireguard-tools
@@ -118,5 +106,4 @@ xorg-xinput
 xorg-xrandr
 xss-lock
 xssstate
-yay
 zip

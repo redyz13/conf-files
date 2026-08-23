@@ -276,5 +276,5 @@ label = %output%
 # General Settings
 # ---------------------------
 [settings]
-screenchange-reload = true
+screenchange-reload = false
 

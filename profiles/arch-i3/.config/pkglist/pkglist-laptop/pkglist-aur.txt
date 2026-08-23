@@ -10,4 +10,5 @@ spotify
 tmux-custom
 tmux-custom-debug
 vesktop
+xlayoutdisplay
 yay
