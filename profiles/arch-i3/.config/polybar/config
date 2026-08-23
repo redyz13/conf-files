@@ -207,11 +207,12 @@ menu-3-1-exec = menu-open-0
 # ---------------------------
 [module/spotify]
 type = custom/script
-interval = 0.5
+exec = ~/.config/polybar/spotify.py
+tail = true
+
 format-prefix = "playing: "
-format = <label>
 format-prefix-foreground = ${xrdb:color2}
-exec = python $HOME/.config/polybar/spotify.py -f '{song}'
+format = <label>
 
 # ---------------------------
 # Module: Battery
