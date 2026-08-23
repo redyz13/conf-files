@@ -117,5 +117,6 @@ xorg-xinit
 xorg-xinput
 xorg-xrandr
 xss-lock
+xssstate
 yay
 zip
