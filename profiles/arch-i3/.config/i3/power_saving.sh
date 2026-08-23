@@ -9,19 +9,38 @@ BRIGHTNESS_LOW=35%
 BRIGHTNESS_HIGH=75%
 MODE_FILE="/etc/tlp.d/99-mode.conf"
 
+refresh_powerdot() {
+  polybar-msg action "#powerdot.hook.0" >/dev/null 2>&1 || true
+}
+
 if grep -q "TLP_DEFAULT_MODE=BAT" "$MODE_FILE" 2>/dev/null; then
   echo "[INFO] Disabling power saving mode..."
+
   brightnessctl set "$BRIGHTNESS_HIGH"
+
   echo "[INFO] Switching TLP to AC mode..."
-  echo -e "TLP_PERSISTENT_DEFAULT=1\nTLP_DEFAULT_MODE=AC" | sudo tee "$MODE_FILE" >/dev/null
+
+  echo -e "TLP_PERSISTENT_DEFAULT=1\nTLP_DEFAULT_MODE=AC" \
+    | sudo tee "$MODE_FILE" >/dev/null
+
+  refresh_powerdot
+
   sudo tlp ac
+
   notify-send "Power saving disabled"
 else
   echo "[INFO] Enabling power saving mode..."
+
   brightnessctl set "$BRIGHTNESS_LOW"
+
   echo "[INFO] Switching TLP to battery mode..."
-  echo -e "TLP_PERSISTENT_DEFAULT=1\nTLP_DEFAULT_MODE=BAT" | sudo tee "$MODE_FILE" >/dev/null
+
+  echo -e "TLP_PERSISTENT_DEFAULT=1\nTLP_DEFAULT_MODE=BAT" \
+    | sudo tee "$MODE_FILE" >/dev/null
+
+  refresh_powerdot
+
   sudo tlp bat
+
   notify-send "Power saving enabled"
 fi
-
