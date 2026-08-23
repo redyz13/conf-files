@@ -98,8 +98,8 @@ ufw_remove_rules() {
 }
 
 nm_get_active_conn() {
-  nmcli -t -f NAME,DEVICE,TYPE connection show --active 2>/dev/null \
-    | awk -F: '$3 ~ /^(ethernet|wifi)$/ { print $1; exit }'
+  nmcli -t -f UUID,TYPE connection show --active 2>/dev/null \
+    | awk -F: '$2 ~ /^(802-3-ethernet|802-11-wireless|ethernet|wifi)$/ { print $1; exit }'
 }
 
 nm_backup_conn_flags() {
@@ -134,7 +134,6 @@ nm_restore_conn_flags() {
   v6="$(cat "${STATE_DIR}/nm_ipv6_ignore" 2>/dev/null || true)"
   [[ -n "$conn" ]] || return 0
 
-  # If we don't know the previous value, default to "no"
   [[ -n "$v4" ]] || v4="no"
   [[ -n "$v6" ]] || v6="no"
 
@@ -189,6 +188,7 @@ DNSStubListener=yes
 LLMNR=no
 MulticastDNS=no
 EOF
+  as_root systemctl enable --now systemd-resolved
   as_root systemctl restart systemd-resolved
   as_root ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 }
