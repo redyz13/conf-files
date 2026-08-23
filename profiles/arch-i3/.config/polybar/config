@@ -245,11 +245,13 @@ label-foreground = ${xrdb:color2}
 # ---------------------------
 [module/brightness]
 type = custom/script
-exec = brightnessctl | grep -oP '\(\K[0-9]+(?=%)'
+exec = ~/.config/polybar/brightness-watch.py
+tail = true
+
 format-prefix = "brightness: "
 format-prefix-foreground = ${xrdb:color2}
-interval = 0.1
 label = %output%%
+
 click-right = brightnessctl s 10%-
 click-left = brightnessctl s +10%
 scroll-up = brightnessctl s +5%
