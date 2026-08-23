@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-DPI=110
+LAPTOP_DPI=110
 MODE="${1:-auto}"
 
 mapfile -t CONNECTED < <(
@@ -34,6 +34,11 @@ fi
 
 ANCHOR="${ANCHOR:-${CONNECTED[0]}}"
 
+DPI_ARGS=()
+if [[ "$ANCHOR" =~ ^(eDP|LVDS|DSI) ]]; then
+    DPI_ARGS=(-d "$LAPTOP_DPI")
+fi
+
 OTHERS=()
 for output in "${CONNECTED[@]}"; do
     [[ "$output" == "$ANCHOR" ]] || OTHERS+=("$output")
@@ -41,11 +46,11 @@ done
 
 case "$MODE" in
     auto)
-        xlayoutdisplay -d "$DPI"
+        xlayoutdisplay "${DPI_ARGS[@]}"
         ;;
 
     left)
-        args=(-d "$DPI")
+        args=("${DPI_ARGS[@]}")
 
         for output in "${OTHERS[@]}"; do
             args+=(-o "$output")
@@ -57,7 +62,7 @@ case "$MODE" in
         ;;
 
     right)
-        args=(-d "$DPI" -o "$ANCHOR")
+        args=("${DPI_ARGS[@]}" -o "$ANCHOR")
 
         for output in "${OTHERS[@]}"; do
             args+=(-o "$output")
@@ -69,7 +74,7 @@ case "$MODE" in
         ;;
 
     mirror)
-        xlayoutdisplay -d "$DPI" -m
+        xlayoutdisplay "${DPI_ARGS[@]}" -m
         ;;
 
     external)
@@ -84,7 +89,7 @@ case "$MODE" in
         fi
 
         # Arrange external outputs first, then disable the internal panel.
-        args=(-d "$DPI")
+        args=("${DPI_ARGS[@]}")
 
         for output in "${OTHERS[@]}"; do
             args+=(-o "$output")

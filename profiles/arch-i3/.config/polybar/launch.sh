@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 
-killall -q polybar
+killall -q polybar 2>/dev/null || true
 
-while pgrep -u "$UID" -x polybar >/dev/null; do
+for _ in {1..25}; do
+    pgrep -u "$UID" -x polybar >/dev/null || break
     sleep 0.2
 done
+
+if pgrep -u "$UID" -x polybar >/dev/null; then
+    killall -q -9 polybar
+fi
 
 BATTERY=$(ls /sys/class/power_supply/ 2>/dev/null | grep -E '^BAT' | head -n1)
 ADAPTER=$(ls /sys/class/power_supply/ 2>/dev/null | grep -E '^(AC|ACAD|ADP)' | head -n1)
@@ -12,8 +17,25 @@ ADAPTER=$(ls /sys/class/power_supply/ 2>/dev/null | grep -E '^(AC|ACAD|ADP)' | h
 BATTERY=${BATTERY:-BAT1}
 ADAPTER=${ADAPTER:-AC}
 
+POLYBAR_MODULES_LEFT="pulseaudio memory cpu ping"
+POLYBAR_MODULES_RIGHT="filesystem"
+
+if command -v brightnessctl >/dev/null 2>&1 && compgen -G '/sys/class/backlight/*' >/dev/null; then
+    POLYBAR_MODULES_LEFT="pulseaudio brightness memory cpu ping"
+fi
+
+if compgen -G '/sys/class/power_supply/BAT*' >/dev/null; then
+    POLYBAR_MODULES_RIGHT="filesystem battery"
+
+    if [[ -f /etc/tlp.d/99-mode.conf ]]; then
+        POLYBAR_MODULES_RIGHT+=" powerdot"
+    fi
+fi
+
 export BATTERY
 export ADAPTER
+export POLYBAR_MODULES_LEFT
+export POLYBAR_MODULES_RIGHT
 
 launch_bars() {
     local monitor="$1"
