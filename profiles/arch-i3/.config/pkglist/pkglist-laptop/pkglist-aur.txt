@@ -1,7 +1,6 @@
 gotop-bin
 i3-swallow-custom
 i3lock-color
-joystickwake
 notion-app-electron
 pfetch
 phonon-qt6-mpv

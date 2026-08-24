@@ -64,6 +64,7 @@ polybar
 powerline
 powerline-fonts
 python-dbus
+python-evdev
 python-i3ipc
 python-pip
 python-pydbus
