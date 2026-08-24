@@ -48,8 +48,8 @@ return {
           java = {
             "class_declaration",
             "class_body",
-            "method_invocation",
-            "method_reference",
+            "constructor_declaration",
+            "method_declaration",
             "return_statement",
             "while_statement",
           },
@@ -95,7 +95,6 @@ return {
           java = {
             "lambda_expression",
             "enhanced_for_statement",
-            "constructor_declaration",
           },
 
           lua = {
