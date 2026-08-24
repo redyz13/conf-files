@@ -233,8 +233,7 @@ bindsym Mod1+Shift+Tab  exec $i3t_alt_shift_tab
 # ---------------------------
 # Gaming
 # ---------------------------
-exec --no-startup-id joystickwake --cooldown 15 --loglevel info
-exec --no-startup-id ~/.config/i3/disable-touchpad-loop.sh
+exec --no-startup-id ~/.config/i3/controller-wake.py
 exec_always --no-startup-id nvidia-settings -a "[dpy:4]/DigitalVibrance=512"
 exec_always --no-startup-id nvidia-settings -a SyncToVBlank=0
 
