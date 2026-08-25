@@ -44,4 +44,3 @@ pkill -x dunst 2>/dev/null || true
 
 dunst -conf "$DUNST_CONFIG" &
 
-
