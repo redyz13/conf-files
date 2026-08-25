@@ -6,4 +6,6 @@ NetworkManager-wait-online.service           enabled         disabled
 NetworkManager.service                       enabled         disabled
 ufw.service                                  enabled         disabled
 docker.socket                                enabled         disabled
+systemd-resolved-monitor.socket              enabled         disabled
+systemd-resolved-varlink.socket              enabled         disabled
 reflector.timer                              enabled         disabled

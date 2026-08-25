@@ -8,12 +8,13 @@ systemd-network-generator.service            disabled        enabled
 systemd-networkd-wait-online.service         disabled        enabled
 systemd-networkd.service                     disabled        enabled
 systemd-pstore.service                       disabled        enabled
-systemd-resolved.service                     disabled        enabled
 systemd-sysext.service                       disabled        enabled
 systemd-tpm2-clear.service                   disabled        enabled
 systemd-journald-audit.socket                disabled        enabled
 systemd-mountfsd.socket                      disabled        enabled
 systemd-nsresourced.socket                   disabled        enabled
+systemd-report-basic.socket                  disabled        enabled
+systemd-report-cgroup.socket                 disabled        enabled
 machines.target                              disabled        enabled
 reboot.target                                disabled        enabled
 remote-cryptsetup.target                     disabled        enabled

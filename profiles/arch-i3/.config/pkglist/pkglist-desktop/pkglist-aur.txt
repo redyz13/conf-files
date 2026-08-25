@@ -1,12 +1,11 @@
-electron40-bin
 gotop-bin
 i3-swallow-custom
 i3lock-color
-joystickwake
 notion-app-electron
 pfetch
 spotify
 tmux-custom
 tmux-custom-debug
+vesktop
+xlayoutdisplay
 yay
-yay-debug
