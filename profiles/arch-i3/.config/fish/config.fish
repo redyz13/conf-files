@@ -49,9 +49,6 @@ alias aptins='sudo apt install'
 alias aptrmv='sudo apt remove'
 alias aptpur='sudo apt purge'
 
-# nvm.fish: on a new machine run:
-# set --universal nvm_default_version lts
-
 # Sashimi
 function fish_prompt
   set -l last_status $status
