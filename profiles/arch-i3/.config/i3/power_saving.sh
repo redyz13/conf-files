@@ -13,14 +13,14 @@ refresh_powerdot() {
   polybar-msg action "#powerdot.hook.0" >/dev/null 2>&1 || true
 }
 
-if grep -q "TLP_DEFAULT_MODE=BAT" "$MODE_FILE" 2>/dev/null; then
+if grep -q "TLP_PROFILE_DEFAULT=BAT" "$MODE_FILE" 2>/dev/null; then
   echo "[INFO] Disabling power saving mode..."
 
   brightnessctl set "$BRIGHTNESS_HIGH"
 
   echo "[INFO] Switching TLP to AC mode..."
 
-  echo -e "TLP_PERSISTENT_DEFAULT=1\nTLP_DEFAULT_MODE=AC" \
+  echo -e "TLP_AUTO_SWITCH=0\nTLP_PROFILE_DEFAULT=AC" \
     | sudo tee "$MODE_FILE" >/dev/null
 
   refresh_powerdot
@@ -35,7 +35,7 @@ else
 
   echo "[INFO] Switching TLP to battery mode..."
 
-  echo -e "TLP_PERSISTENT_DEFAULT=1\nTLP_DEFAULT_MODE=BAT" \
+  echo -e "TLP_AUTO_SWITCH=0\nTLP_PROFILE_DEFAULT=BAT" \
     | sudo tee "$MODE_FILE" >/dev/null
 
   refresh_powerdot
