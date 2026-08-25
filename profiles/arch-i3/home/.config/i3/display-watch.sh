@@ -3,6 +3,10 @@
 set -u
 
 APPLY="$HOME/.config/i3/display_apply.sh"
+LOCK_FILE="${XDG_RUNTIME_DIR:-/tmp}/display-watch.lock"
+
+exec 9>"$LOCK_FILE" || exit 1
+flock -n 9 || exit 0
 
 connected_outputs() {
     xrandr --query |
