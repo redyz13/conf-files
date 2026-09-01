@@ -4,6 +4,7 @@ p11-kit-server.service                                                          
 podman-auto-update.service                                                                disabled  enabled
 podman-clean-transient.service                                                            disabled  enabled
 podman-kube@.service                                                                      disabled  enabled
+podman-restart.service                                                                    disabled  enabled
 podman.service                                                                            disabled  enabled
 systemd-nspawn@.service                                                                   disabled  enabled
 systemd-tmpfiles-setup.service                                                            disabled  enabled

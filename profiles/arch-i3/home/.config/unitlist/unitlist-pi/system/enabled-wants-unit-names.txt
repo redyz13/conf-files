@@ -11,5 +11,4 @@ systemd-networkd-wait-online.service
 systemd-network-generator.service
 systemd-resolved.service
 systemd-timesyncd.service
-wg0-gate.service
 wg-quick@wg0.service
