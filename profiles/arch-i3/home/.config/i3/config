@@ -205,6 +205,7 @@ bindsym $mod+d exec rofi -show drun -font 'Hack Nerd Font 12'
 bindsym $mod+period exec "rofimoji --action type"
 bindsym $mod+Shift+p exec --no-startup-id ~/.config/i3/power_saving.sh
 bindsym $mod+Shift+m exec --no-startup-id ~/.config/i3/tv_mode.sh
+bindsym $mod+Shift+n exec --no-startup-id ~/.config/i3/eye-mode.sh
 
 # ---------------------------
 # Lock screen
