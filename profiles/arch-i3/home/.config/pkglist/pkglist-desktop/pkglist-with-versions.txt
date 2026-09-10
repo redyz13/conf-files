@@ -690,6 +690,7 @@ python 3.14.7-1
 python-attrs 26.1.0-1
 python-cairo 1.29.1-1
 python-cffi 2.1.1-1
+python-colorthief 0.2.1-5
 python-configargparse 1.7.7-1
 python-cryptography 50.0.1-1
 python-dbus 1.4.0-2
@@ -698,6 +699,7 @@ python-filelock 3.31.2-1
 python-gobject 3.56.3-1
 python-i3ipc 2.2.1-9
 python-packaging 26.3-1
+python-pillow 12.3.0-1
 python-pip 26.2.1-1
 python-pycparser 3.00-1
 python-pydbus 0.6.0-14

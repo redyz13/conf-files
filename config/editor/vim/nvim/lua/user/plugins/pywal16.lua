@@ -5,6 +5,16 @@ return {
   priority = 1001,
   config = function()
     if vim.g.my_colorscheme ~= "pywal16" then return end
+
+    vim.api.nvim_create_autocmd('ColorSchemePre', {
+      pattern = 'pywal16',
+      callback = function()
+        for _, group in ipairs(vim.fn.getcompletion('BufferLine', 'highlight')) do
+          vim.cmd('highlight clear ' .. group)
+        end
+      end,
+    })
+
     require('pywal16').setup()
     vim.cmd('colorscheme pywal16')
 
@@ -40,4 +50,3 @@ return {
     })
   end
 }
-

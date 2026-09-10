@@ -15,6 +15,7 @@ return {
     },
 
     whitespace = {
+      highlight = "Whitespace",
       remove_blankline_trail = true,
     },
 

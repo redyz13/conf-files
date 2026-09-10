@@ -71,6 +71,7 @@ pipewire-pulse
 polybar
 powerline
 powerline-fonts
+python-colorthief
 python-dbus
 python-evdev
 python-i3ipc

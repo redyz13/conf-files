@@ -1,7 +1,13 @@
 #!/bin/bash
-tmux list-panes -a -F "#{pane_pid} #{pane_id}" | while read pid pane; do
-  if pgrep -P "$pid" -x nvim > /dev/null; then
-    tmux send-keys -t "$pane" ":colorscheme pywal16" C-m
-  fi
+
+runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+
+for socket in "$runtime_dir"/nvim.*.0; do
+    [[ -S "$socket" ]] || continue
+
+    nvim --server "$socket" \
+        --remote-expr 'execute("colorscheme pywal16")' \
+        >/dev/null 2>&1 &
 done
 
+wait
