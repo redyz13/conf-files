@@ -6,7 +6,6 @@ notion-app-electron
 pfetch
 phonon-qt6-mpv
 python-pywal
-python311
 spotify
 tmux-custom
 tmux-custom-debug

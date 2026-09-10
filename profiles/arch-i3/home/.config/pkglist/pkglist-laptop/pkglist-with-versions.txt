@@ -694,7 +694,6 @@ python-pywal 3.3.0-11
 python-six 1.17.0-3
 python-wheel 0.48.0-1
 python-xlib 0.33-7
-python311 3.11.16-1
 qbittorrent 5.2.3-3
 qca-qt6 2.3.12-1
 qqc2-desktop-style 6.30.0-1
