@@ -9,26 +9,24 @@ current="$(cat "$HOME/.cache/wal/wal" 2>/dev/null)"
 apply_theme() {
     local wallpaper="$1"
 
-    if wal -q -i "$wallpaper" >/dev/null 2>&1; then
-        "$HOME/.config/i3/reload-colors-nvim.sh"
-        return 0
-    fi
+    wal -q -e -i "$wallpaper" >/dev/null 2>&1 || return 1
 
-    if wal -q --backend colorthief -i "$wallpaper" >/dev/null 2>&1; then
-        "$HOME/.config/i3/reload-colors-nvim.sh"
-        return 0
-    fi
+    xrdb -merge -quiet "$HOME/.cache/wal/colors.Xresources"
+    i3-msg reload >/dev/null
 
-    return 1
+    while read -r pid; do
+        polybar-msg -p "$pid" cmd restart >/dev/null 2>&1
+    done < <(pgrep -x polybar)
+
+    "$HOME/.config/i3/reload-colors-nvim.sh"
+
+    # Keep the lock while Polybar completes its internal restart.
+    sleep 0.35
 }
 
 if [[ -n "$1" ]]; then
-    if ! apply_theme "$1"; then
-        [[ -n "$current" ]] && printf '%s\n' "$current" > "$HOME/.cache/wal/wal"
-        exit 1
-    fi
-
-    exit 0
+    apply_theme "$1"
+    exit $?
 fi
 
 while IFS= read -r -d '' wallpaper; do
@@ -37,7 +35,9 @@ while IFS= read -r -d '' wallpaper; do
     if apply_theme "$wallpaper"; then
         exit 0
     fi
-done < <(find "$HOME/Wallpapers" -type f -print0 | shuf -z)
+done < <(
+    find "$HOME/Wallpapers/active" -maxdepth 1 -type f -print0 |
+        shuf -z
+)
 
-[[ -n "$current" ]] && printf '%s\n' "$current" > "$HOME/.cache/wal/wal"
 exit 1
