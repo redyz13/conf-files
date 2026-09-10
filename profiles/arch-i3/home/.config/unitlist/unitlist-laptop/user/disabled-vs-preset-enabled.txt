@@ -1,6 +1,8 @@
 UNIT FILE	STATE	PRESET
 dbus-broker.service                          disabled  enabled
 filter-chain.service                         disabled  enabled
+gammastep-indicator.service                  disabled  enabled
+gammastep.service                            disabled  enabled
 gcr-ssh-agent.service                        disabled  enabled
 jack@.service                                disabled  enabled
 mpris-proxy.service                          disabled  enabled

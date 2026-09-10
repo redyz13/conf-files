@@ -5,6 +5,7 @@ base
 base-devel
 bash-completion
 bind
+blueman
 bluez
 bluez-utils
 brightnessctl
@@ -18,11 +19,13 @@ dnscrypt-proxy
 docker
 docker-compose
 dunst
+easyeffects
 efibootmgr
 eza
 feh
 firefox
 fish
+gammastep
 git
 gnome-themes-extra
 grub
@@ -68,7 +71,6 @@ python-evdev
 python-i3ipc
 python-pip
 python-pydbus
-python-pywal
 python-xlib
 qbittorrent
 ranger
