@@ -2,10 +2,12 @@ SYMLINK	TARGET
 /etc/systemd/system/bluetooth.target.wants/bluetooth.service	/usr/lib/systemd/system/bluetooth.service
 /etc/systemd/system/getty.target.wants/getty@tty1.service	/usr/lib/systemd/system/getty@.service
 /etc/systemd/system/multi-user.target.wants/dnscrypt-proxy.service	/usr/lib/systemd/system/dnscrypt-proxy.service
+/etc/systemd/system/multi-user.target.wants/dnscrypt-toggle-reconcile.service	/etc/systemd/system/dnscrypt-toggle-reconcile.service
 /etc/systemd/system/multi-user.target.wants/NetworkManager.service	/usr/lib/systemd/system/NetworkManager.service
 /etc/systemd/system/multi-user.target.wants/remote-fs.target	/usr/lib/systemd/system/remote-fs.target
 /etc/systemd/system/multi-user.target.wants/ufw.service	/usr/lib/systemd/system/ufw.service
 /etc/systemd/system/network-online.target.wants/NetworkManager-wait-online.service	/usr/lib/systemd/system/NetworkManager-wait-online.service
+/etc/systemd/system/network-pre.target.wants/dnscrypt-toggle-killswitch.service	/etc/systemd/system/dnscrypt-toggle-killswitch.service
 /etc/systemd/system/sockets.target.wants/docker.socket	/usr/lib/systemd/system/docker.socket
 /etc/systemd/system/sockets.target.wants/systemd-resolved-monitor.socket	/usr/lib/systemd/system/systemd-resolved-monitor.socket
 /etc/systemd/system/sockets.target.wants/systemd-resolved-varlink.socket	/usr/lib/systemd/system/systemd-resolved-varlink.socket

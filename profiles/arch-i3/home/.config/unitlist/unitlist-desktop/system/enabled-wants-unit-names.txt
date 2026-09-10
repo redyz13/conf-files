@@ -1,6 +1,8 @@
 UNIT
 bluetooth.service
 dnscrypt-proxy.service
+dnscrypt-toggle-killswitch.service
+dnscrypt-toggle-reconcile.service
 docker.socket
 getty@tty1.service
 NetworkManager.service

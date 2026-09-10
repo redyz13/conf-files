@@ -5,6 +5,7 @@ base
 base-devel
 bash-completion
 bind
+blueman
 bluez
 bluez-utils
 brightnessctl
@@ -19,11 +20,13 @@ docker
 docker-compose
 dosfstools
 dunst
+easyeffects
 efibootmgr
 eza
 feh
 firefox
 fish
+gammastep
 git
 gnome-themes-extra
 grub
@@ -56,6 +59,7 @@ ntfs-3g
 nvidia-open
 nvidia-settings
 nvidia-utils
+okular
 os-prober
 otf-font-awesome
 pavucontrol
@@ -72,7 +76,6 @@ python-evdev
 python-i3ipc
 python-pip
 python-pydbus
-python-pywal
 python-xlib
 qbittorrent
 ranger

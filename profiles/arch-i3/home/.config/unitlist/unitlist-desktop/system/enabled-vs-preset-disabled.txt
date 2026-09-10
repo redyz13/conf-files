@@ -1,6 +1,8 @@
 UNIT FILE	STATE	PRESET
 bluetooth.service                            enabled         disabled
 dnscrypt-proxy.service                       enabled         disabled
+dnscrypt-toggle-killswitch.service           enabled         disabled
+dnscrypt-toggle-reconcile.service            enabled         disabled
 NetworkManager-dispatcher.service            enabled         disabled
 NetworkManager-wait-online.service           enabled         disabled
 NetworkManager.service                       enabled         disabled
