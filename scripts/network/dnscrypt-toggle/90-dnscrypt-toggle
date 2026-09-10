@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# /etc/NetworkManager/dispatcher.d/90-dnscrypt-toggle
+
+set -Eeuo pipefail
+
+readonly SAFE_PATH="/usr/local/sbin:/usr/local/bin:/usr/bin"
+PATH="$SAFE_PATH"
+export PATH
+
+readonly IFACE="${1:-}"
+readonly EVENT="${2:-}"
+readonly STATE_FILE="/var/lib/dnscrypt-toggle/enabled"
+readonly MANAGER="/usr/local/sbin/dnscrypt-toggle"
+
+case "$EVENT" in
+  up|down|dhcp4-change|dhcp6-change|vpn-up|vpn-down|connectivity-change|reapply) ;;
+  *) exit 0 ;;
+esac
+
+[[ -f "$STATE_FILE" ]] || exit 0
+
+if [[ ! -x "$MANAGER" ]]; then
+  logger -t dnscrypt-toggle "dispatcher cannot execute $MANAGER"
+  exit 1
+fi
+
+# Reconcile the current network state, not the possibly stale queued event.
+# The manager serializes this with enable, disable, repair and boot handling.
+exec "$MANAGER" dispatch "$IFACE" "$EVENT"

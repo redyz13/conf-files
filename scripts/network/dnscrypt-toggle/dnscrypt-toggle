@@ -1,0 +1,1023 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+umask 077
+
+readonly SAFE_PATH="/usr/local/sbin:/usr/local/bin:/usr/bin"
+PATH="$SAFE_PATH"
+export PATH
+
+readonly STATE_DIR="/var/lib/dnscrypt-toggle"
+readonly STATE_FILE="${STATE_DIR}/enabled"
+readonly GUARD_MARKER="/etc/dnscrypt-toggle-enabled"
+readonly PHASE_FILE="${STATE_DIR}/phase"
+readonly SCHEMA_FILE="${STATE_DIR}/schema"
+readonly SNAPSHOT_FILE="${STATE_DIR}/snapshot-complete"
+readonly BACKUP_DIR="${STATE_DIR}/backup"
+readonly ABSENT_DIR="${STATE_DIR}/absent"
+readonly ABSENT_PARENT_DIR="${STATE_DIR}/absent-parents"
+readonly SCHEMA_VERSION="4"
+
+readonly DNSCRYPT_TOML="/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
+readonly RESOLV_CONF="/etc/resolv.conf"
+readonly RESOLVED_DROPIN="/etc/systemd/resolved.conf.d/dnscrypt.conf"
+readonly NM_DROPIN="/etc/NetworkManager/conf.d/99-dnscrypt-toggle.conf"
+
+readonly FIREWALL_HELPER="/usr/local/libexec/dnscrypt-toggle-firewall"
+readonly DISPATCHER_SOURCE="/usr/local/libexec/dnscrypt-toggle-dispatcher"
+readonly KILLSWITCH_UNIT="dnscrypt-toggle-killswitch.service"
+readonly KILLSWITCH_UNIT_PATH="/etc/systemd/system/${KILLSWITCH_UNIT}"
+readonly RECONCILE_UNIT="dnscrypt-toggle-reconcile.service"
+readonly RECONCILE_UNIT_PATH="/etc/systemd/system/${RECONCILE_UNIT}"
+readonly LEGACY_DISPATCHER_PATH="/etc/NetworkManager/dispatcher.d/50-dnscrypt-campus"
+readonly DISPATCHER_PATH="/etc/NetworkManager/dispatcher.d/90-dnscrypt-toggle"
+readonly NM_UNIT_DROPIN="/etc/systemd/system/NetworkManager.service.d/50-dnscrypt-toggle-killswitch.conf"
+readonly WG_INTERFACE="wg0"
+readonly WG_CONFIG_DIR="/etc/wireguard"
+readonly WG_UNIT_DROPIN="/etc/systemd/system/wg-quick@${WG_INTERFACE}.service.d/20-dnscrypt-toggle.conf"
+readonly WG_MANAGED_MARKER="${STATE_DIR}/wg-integration"
+readonly WG_DNS_ATTEMPTS=24
+readonly WG_DNS_QUERY_TIMEOUT=2
+readonly WG_DNS_RETRY_DELAY=0.5
+
+readonly DNSCRYPT_READY_ATTEMPTS=60
+readonly DNSCRYPT_READY_DELAY=0.5
+
+readonly LOCK_TARGET="${BASH_SOURCE[0]}"
+readonly LEGACY_MANAGER_LOCK_FILE="/run/lock/dnscrypt-toggle.lock"
+readonly FIREWALL_RUNTIME_DIR="/run/dnscrypt-toggle-firewall"
+readonly LEGACY_FIREWALL_LOCK_FILE="/run/lock/dnscrypt-toggle-firewall.lock"
+
+log() { printf '%s\n' "$*"; }
+err() { printf 'ERROR: %s\n' "$*" >&2; }
+die() { err "$*"; exit 1; }
+
+if (( EUID != 0 )); then
+  exec sudo -- "$0" "$@"
+fi
+
+ACTION="${1:-status}"
+shift || true
+
+# Lock the already-installed manager itself.  This preserves serialization
+# without creating a runtime path merely because a read-only `status` command
+# was executed while the toggle was disabled.
+[[ -f "$LOCK_TARGET" ]] || die "invalid manager lock target: $LOCK_TARGET"
+exec 9<"$LOCK_TARGET"
+if [[ "$ACTION" == "dispatch" ]]; then
+  flock -n 9 || exit 0
+else
+  flock -w 30 9 || die "another dnscrypt-toggle operation is running"
+fi
+
+need_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+require_commands() {
+  local command_name
+  for command_name in \
+    systemctl systemd-analyze nmcli resolvectl dnscrypt-proxy dig getent timeout ip \
+    awk sed grep flock install cmp readlink mktemp stat logger \
+    chmod cp dirname ln mkdir rm rmdir sleep; do
+    need_cmd "$command_name" || die "missing required command: $command_name"
+  done
+}
+
+make_temp() {
+  mktemp --tmpdir=/run dnscrypt-toggle.XXXXXX
+}
+
+write_phase() {
+  install -d -m 0700 -o root -g root "$STATE_DIR" || return 1
+  printf '%s\n' "$1" >"$PHASE_FILE" || return 1
+  chmod 0600 "$PHASE_FILE" || return 1
+}
+
+read_phase() {
+  if [[ -f "$PHASE_FILE" ]]; then
+    sed -n '1p' "$PHASE_FILE"
+  else
+    printf '%s\n' "absent"
+  fi
+}
+
+emit_dnscrypt_config() {
+  cat <<'EOF'
+# Managed transactionally while dnscrypt-toggle is enabled.
+# Both DoH stamps contain fixed resolver IPs: no plaintext bootstrap is needed.
+
+server_names = ['cloudflare-static', 'quad9-nofilter-static']
+listen_addresses = ['127.0.0.1:53', '[::1]:53']
+max_clients = 250
+
+ipv4_servers = true
+ipv6_servers = false
+dnscrypt_servers = false
+doh_servers = true
+odoh_servers = false
+http3 = false
+
+log_level = 2
+use_syslog = true
+
+bootstrap_resolvers = []
+ignore_system_dns = true
+netprobe_timeout = -1
+netprobe_address = '1.0.0.1:443'
+
+block_unqualified = true
+block_undelegated = true
+
+cache = true
+cache_size = 4096
+cache_min_ttl = 60
+cache_max_ttl = 86400
+cache_neg_min_ttl = 60
+cache_neg_max_ttl = 600
+
+[static.'cloudflare-static']
+stamp = 'sdns://AgcAAAAAAAAABzEuMC4wLjEAEmRucy5jbG91ZGZsYXJlLmNvbQovZG5zLXF1ZXJ5'
+
+# Normal TLS hostname validation is used without a static certificate pin, so
+# a future Quad9 certificate rotation cannot silently remove this fallback.
+[static.'quad9-nofilter-static']
+stamp = 'sdns://AgcAAAAAAAAACDkuOS45LjEwABNkbnMxMC5xdWFkOS5uZXQ6NDQzCi9kbnMtcXVlcnk'
+EOF
+}
+
+emit_resolved_config() {
+  cat <<'EOF'
+[Resolve]
+DNS=127.0.0.1
+FallbackDNS=
+DNSSEC=no
+DNSOverTLS=no
+DNSStubListener=yes
+LLMNR=no
+MulticastDNS=no
+EOF
+}
+
+emit_nm_config() {
+  cat <<'EOF'
+[main]
+dns=none
+systemd-resolved=false
+EOF
+}
+
+emit_nm_unit_dropin() {
+  cat <<'EOF'
+[Unit]
+Requires=dnscrypt-toggle-killswitch.service
+After=dnscrypt-toggle-killswitch.service
+EOF
+}
+
+emit_wg_unit_dropin() {
+  cat <<'EOF'
+[Unit]
+After=dnscrypt-toggle-reconcile.service
+StartLimitIntervalSec=2min
+StartLimitBurst=12
+
+[Service]
+ExecStartPre=/usr/local/sbin/dnscrypt-toggle wg-ready %i
+Restart=on-failure
+RestartSec=5s
+EOF
+}
+
+install_generated_file() {
+  local target="$1" mode="$2" producer="$3" tmp
+  tmp="$(make_temp)" || return 1
+  if ! "$producer" >"$tmp"; then
+    rm -f -- "$tmp"
+    return 1
+  fi
+  if ! install -D -o root -g root -m "$mode" "$tmp" "$target"; then
+    rm -f -- "$tmp"
+    return 1
+  fi
+  rm -f -- "$tmp"
+}
+
+generated_file_matches() {
+  local target="$1" producer="$2" tmp result=1
+  [[ -f "$target" ]] || return 1
+  tmp="$(make_temp)" || return 1
+  if ! "$producer" >"$tmp"; then
+    rm -f -- "$tmp"
+    return 1
+  fi
+  cmp -s -- "$tmp" "$target" && result=0
+  rm -f -- "$tmp"
+  return "$result"
+}
+
+install_copied_file() {
+  local target="$1" mode="$2" source="$3"
+  install -D -o root -g root -m "$mode" "$source" "$target"
+}
+
+copied_file_matches() {
+  local target="$1" source="$2"
+  [[ -f "$target" && -f "$source" ]] && cmp -s -- "$source" "$target"
+}
+
+validate_generated_dnscrypt_config() {
+  local tmp
+  tmp="$(make_temp)" || return 1
+  if ! emit_dnscrypt_config >"$tmp"; then
+    rm -f -- "$tmp"
+    return 1
+  fi
+  if ! timeout 15 dnscrypt-proxy -check --config "$tmp"; then
+    rm -f -- "$tmp"
+    return 1
+  fi
+  rm -f -- "$tmp"
+}
+
+snapshot_path() {
+  local path="$1" backup="${BACKUP_DIR}${1}" absent="${ABSENT_DIR}${1}" parent parent_marker
+  parent="$(dirname -- "$path")"
+  parent_marker="${ABSENT_PARENT_DIR}${parent}"
+  if [[ -e "$parent" || -L "$parent" ]]; then
+    [[ -d "$parent" && ! -L "$parent" ]] || {
+      err "unsafe parent directory for snapshot: $parent"
+      return 1
+    }
+  else
+    mkdir -p -- "$(dirname -- "$parent_marker")" || return 1
+    : >"$parent_marker" || return 1
+  fi
+
+  mkdir -p -- "$(dirname -- "$backup")" "$(dirname -- "$absent")" || return 1
+  if [[ -e "$path" || -L "$path" ]]; then
+    [[ -f "$path" || -L "$path" ]] || {
+      err "unsafe non-file snapshot target: $path"
+      return 1
+    }
+    cp -a -- "$path" "$backup" || return 1
+  else
+    : >"$absent" || return 1
+  fi
+}
+
+cleanup_created_parents() {
+  local path parent marker
+  local -A handled=()
+
+  for path in \
+    "$DNSCRYPT_TOML" "$RESOLVED_DROPIN" "$NM_DROPIN" "$NM_UNIT_DROPIN" \
+    "$LEGACY_DISPATCHER_PATH" "$DISPATCHER_PATH" "$WG_UNIT_DROPIN" "$RESOLV_CONF"; do
+    parent="$(dirname -- "$path")"
+    marker="${ABSENT_PARENT_DIR}${parent}"
+    [[ -f "$marker" ]] || continue
+    [[ -z "${handled[$parent]:-}" ]] || continue
+    handled[$parent]=1
+    if [[ -e "$parent" || -L "$parent" ]]; then
+      rmdir -- "$parent" || {
+        err "directory created by enable is not empty: $parent"
+        return 1
+      }
+    fi
+  done
+}
+
+restore_path() {
+  local path="$1" backup="${BACKUP_DIR}${1}" absent="${ABSENT_DIR}${1}"
+  if [[ -e "$backup" || -L "$backup" ]]; then
+    rm -f -- "$path" || return 1
+    mkdir -p -- "$(dirname -- "$path")" || return 1
+    cp -a -- "$backup" "$path" || return 1
+  elif [[ -f "$absent" ]]; then
+    rm -f -- "$path" || return 1
+  else
+    err "snapshot metadata missing for $path"
+    return 1
+  fi
+}
+
+path_matches_snapshot() {
+  local path="$1" backup="${BACKUP_DIR}${1}" absent="${ABSENT_DIR}${1}"
+  if [[ -L "$backup" ]]; then
+    [[ -L "$path" ]] || return 1
+    [[ "$(readlink -- "$path")" == "$(readlink -- "$backup")" ]] || return 1
+    [[ "$(stat -c '%u:%g' -- "$path")" == "$(stat -c '%u:%g' -- "$backup")" ]]
+  elif [[ -f "$backup" ]]; then
+    [[ -f "$path" ]] || return 1
+    cmp -s -- "$backup" "$path" || return 1
+    [[ "$(stat -c '%a:%u:%g' -- "$path")" == "$(stat -c '%a:%u:%g' -- "$backup")" ]]
+  elif [[ -f "$absent" ]]; then
+    [[ ! -e "$path" && ! -L "$path" ]]
+  else
+    return 1
+  fi
+}
+
+unit_enabled_state() {
+  local unit="$1" output
+  output="$(systemctl is-enabled "$unit" 2>/dev/null || true)"
+  [[ -n "$output" ]] || output="unknown"
+  printf '%s\n' "$output"
+}
+
+unit_active_state() {
+  if systemctl is-active --quiet "$1"; then
+    printf '%s\n' active
+  else
+    printf '%s\n' inactive
+  fi
+}
+
+snapshot_unit() {
+  local unit="$1" key="${1//[^[:alnum:]_.-]/_}" enabled active
+  enabled="$(unit_enabled_state "$unit")"
+  active="$(unit_active_state "$unit")"
+
+  case "$enabled" in
+    enabled|enabled-runtime|disabled|static|indirect|generated|transient|alias) ;;
+    *) err "unsupported enabled state for $unit: $enabled"; return 1 ;;
+  esac
+
+  printf '%s\n' "$enabled" >"${STATE_DIR}/${key}.enabled" || return 1
+  printf '%s\n' "$active" >"${STATE_DIR}/${key}.active" || return 1
+}
+
+restore_unit() {
+  local unit="$1" key="${1//[^[:alnum:]_.-]/_}" enabled active
+  [[ -f "${STATE_DIR}/${key}.enabled" && -f "${STATE_DIR}/${key}.active" ]] || {
+    err "unit snapshot missing for $unit"
+    return 1
+  }
+
+  enabled="$(<"${STATE_DIR}/${key}.enabled")"
+  active="$(<"${STATE_DIR}/${key}.active")"
+
+  case "$enabled" in
+    enabled) systemctl enable "$unit" >/dev/null || return 1 ;;
+    enabled-runtime)
+      systemctl disable "$unit" >/dev/null || return 1
+      systemctl enable --runtime "$unit" >/dev/null || return 1
+      ;;
+    disabled) systemctl disable "$unit" >/dev/null || return 1 ;;
+    static|indirect|generated|transient|alias) ;;
+    *) err "cannot restore enabled state for $unit: $enabled"; return 1 ;;
+  esac
+
+  case "$active" in
+    active) systemctl restart "$unit" || return 1 ;;
+    inactive) systemctl stop "$unit" || return 1 ;;
+    *) err "cannot restore active state for $unit: $active"; return 1 ;;
+  esac
+}
+
+unit_matches_snapshot() {
+  local unit="$1" key="${1//[^[:alnum:]_.-]/_}"
+  [[ "$(unit_enabled_state "$unit")" == "$(<"${STATE_DIR}/${key}.enabled")" ]] &&
+    [[ "$(unit_active_state "$unit")" == "$(<"${STATE_DIR}/${key}.active")" ]]
+}
+
+valid_iface() {
+  [[ "$1" =~ ^[[:alnum:]_.:-]+$ ]]
+}
+
+dnscrypt_query_once() {
+  local answer
+  answer="$(timeout 4 dig @127.0.0.1 example.com A +short +time=2 +tries=1 2>/dev/null)" || return 1
+  grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' <<<"$answer"
+}
+
+wait_dnscrypt_ready() {
+  local attempt
+  for ((attempt = 0; attempt < DNSCRYPT_READY_ATTEMPTS; attempt++)); do
+    dnscrypt_query_once && return 0
+    sleep "$DNSCRYPT_READY_DELAY"
+  done
+  return 1
+}
+
+ensure_dnscrypt_ready() {
+  if ! systemctl is-active --quiet dnscrypt-proxy.service; then
+    systemctl restart dnscrypt-proxy.service || return 1
+  fi
+  wait_dnscrypt_ready && return 0
+  log "dnscrypt-proxy is not answering; restarting it once..."
+  systemctl restart dnscrypt-proxy.service || return 1
+  wait_dnscrypt_ready
+}
+
+system_dns_works() {
+  timeout 6 getent ahostsv4 archlinux.org >/dev/null 2>&1
+}
+
+plaintext_dns_is_blocked() {
+  if timeout 3 dig @9.9.9.9 example.com A +short +time=1 +tries=1 >/dev/null 2>&1; then
+    return 1
+  fi
+  if timeout 3 dig @9.9.9.9 example.com A +tcp +short +time=1 +tries=1 >/dev/null 2>&1; then
+    return 1
+  fi
+  if ip -6 route show default 2>/dev/null | grep -q .; then
+    if timeout 3 dig -6 @2620:fe::10 example.com A +short +time=1 +tries=1 >/dev/null 2>&1; then
+      return 1
+    fi
+  fi
+}
+
+resolver_servers_are_expected() {
+  local saw_local=0 line values server
+
+  while IFS= read -r line; do
+    [[ "$line" == *:* ]] || continue
+    values="${line#*:}"
+    for server in $values; do
+      case "$server" in
+        127.0.0.1) saw_local=1 ;;
+        *) return 1 ;;
+      esac
+    done
+  done < <(LC_ALL=C resolvectl dns 2>/dev/null)
+
+  (( saw_local == 1 ))
+}
+
+reconcile_network() {
+  "$FIREWALL_HELPER" check || {
+    err "DNS kill-switch table is missing or invalid"
+    return 1
+  }
+
+  # NetworkManager may leave DNS previously published through D-Bus attached
+  # to already-active links when its DNS mode is hot-reloaded to `none`.
+  # Clear that transient per-link state on every reconciliation.  This does
+  # not modify saved connection profiles; the original DNS is republished by
+  # NetworkManager after its baseline configuration is restored on disable.
+  clear_nm_managed_link_dns || {
+    err "could not clear stale NetworkManager per-link DNS state"
+    return 1
+  }
+
+  ensure_dnscrypt_ready || {
+    err "dnscrypt-proxy is not usable on the current network"
+    return 1
+  }
+  system_dns_works || {
+    err "system DNS sanity check failed"
+    return 1
+  }
+}
+
+reload_nm_dns() {
+  nmcli general reload conf || return 1
+  nmcli general reload dns-full || return 1
+}
+
+clear_nm_managed_link_dns() {
+  local iface
+  while IFS= read -r iface; do
+    [[ -n "$iface" && "$iface" != "--" && "$iface" != "lo" ]] || continue
+    valid_iface "$iface" || {
+      err "invalid active NetworkManager interface: $iface"
+      return 1
+    }
+    resolvectl revert "$iface" || return 1
+  done < <(nmcli -t -f DEVICE connection show --active 2>/dev/null)
+  resolvectl flush-caches
+}
+
+preflight_common() {
+  require_commands
+  if systemctl is-enabled --quiet nftables.service || systemctl is-active --quiet nftables.service; then
+    die "nftables.service is enabled or active and could replace the managed table"
+  fi
+  [[ -f "$DNSCRYPT_TOML" ]] || die "missing $DNSCRYPT_TOML"
+  [[ -x "$FIREWALL_HELPER" ]] || die "missing executable $FIREWALL_HELPER"
+  [[ -x "$DISPATCHER_SOURCE" ]] || die "missing executable $DISPATCHER_SOURCE"
+  [[ -f "$KILLSWITCH_UNIT_PATH" ]] || die "missing $KILLSWITCH_UNIT_PATH"
+  [[ -f "$RECONCILE_UNIT_PATH" ]] || die "missing $RECONCILE_UNIT_PATH"
+  "$FIREWALL_HELPER" validate || die "nftables rejected the managed kill-switch"
+}
+
+create_snapshot() {
+  install -d -m 0700 -o root -g root "$STATE_DIR" "$BACKUP_DIR" "$ABSENT_DIR" || return 1
+  printf '%s\n' "$SCHEMA_VERSION" >"$SCHEMA_FILE" || return 1
+  chmod 0600 "$SCHEMA_FILE" || return 1
+  write_phase preparing || return 1
+
+  snapshot_path "$DNSCRYPT_TOML" || return 1
+  snapshot_path "$RESOLVED_DROPIN" || return 1
+  snapshot_path "$NM_DROPIN" || return 1
+  snapshot_path "$NM_UNIT_DROPIN" || return 1
+  snapshot_path "$LEGACY_DISPATCHER_PATH" || return 1
+  snapshot_path "$DISPATCHER_PATH" || return 1
+  snapshot_path "$WG_UNIT_DROPIN" || return 1
+  snapshot_path "$RESOLV_CONF" || return 1
+  snapshot_unit dnscrypt-proxy.service || return 1
+  snapshot_unit systemd-resolved.service || return 1
+
+  # WireGuard integration is host-local.  It is activated only on a machine
+  # that already has this interface configured, so the shared implementation
+  # never creates a laptop-specific unit drop-in on another host.
+  if [[ -f "${WG_CONFIG_DIR}/${WG_INTERFACE}.conf" ]]; then
+    : >"$WG_MANAGED_MARKER" || return 1
+    chmod 0600 "$WG_MANAGED_MARKER" || return 1
+  fi
+
+  : >"$SNAPSHOT_FILE" || return 1
+  chmod 0600 "$SNAPSHOT_FILE" || return 1
+  write_phase enabling || return 1
+}
+
+state_schema_is_current() {
+  [[ -f "$SCHEMA_FILE" ]] && [[ "$(<"$SCHEMA_FILE")" == "$SCHEMA_VERSION" ]]
+}
+
+trim_whitespace() {
+  local value="$1"
+  value="${value#"${value%%[![:space:]]*}"}"
+  value="${value%"${value##*[![:space:]]}"}"
+  printf '%s\n' "$value"
+}
+
+collect_wg_endpoint_hosts() {
+  local interface="$1" destination_name="$2" config line value host port existing
+  local -n destination="$destination_name"
+  destination=()
+  valid_iface "$interface" || return 1
+  config="${WG_CONFIG_DIR}/${interface}.conf"
+  [[ -r "$config" ]] || return 1
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%%#*}"
+    [[ "$line" =~ ^[[:space:]]*Endpoint[[:space:]]*= ]] || continue
+    value="${line#*=}"
+    value="$(trim_whitespace "$value")"
+    [[ -n "$value" && "$value" != *[[:space:]]* ]] || return 1
+
+    if [[ "$value" == \[*\]:* ]]; then
+      host="${value#\[}"
+      host="${host%%\]*}"
+      port="${value##*:}"
+      [[ -n "$host" && "$port" =~ ^[0-9]+$ ]] || return 1
+      # A bracketed endpoint is an IPv6 literal and needs no DNS lookup.
+      continue
+    fi
+
+    [[ "$value" == *:* ]] || return 1
+    host="${value%:*}"
+    port="${value##*:}"
+    [[ -n "$host" && "$port" =~ ^[0-9]+$ ]] || return 1
+    if [[ "$host" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+      continue
+    fi
+    [[ "$host" =~ ^[[:alnum:]]([[:alnum:].-]*[[:alnum:]])?$ ]] || return 1
+    for existing in "${destination[@]}"; do
+      [[ "$existing" == "$host" ]] && continue 2
+    done
+    destination+=("$host")
+  done <"$config"
+}
+
+wait_wg_endpoint_ready() {
+  local interface="$1" attempt host all_ready
+  local -a hosts=()
+
+  collect_wg_endpoint_hosts "$interface" hosts || return 1
+  (( ${#hosts[@]} > 0 )) || return 0
+
+  for ((attempt = 1; attempt <= WG_DNS_ATTEMPTS; attempt++)); do
+    all_ready=1
+    for host in "${hosts[@]}"; do
+      if ! timeout "$WG_DNS_QUERY_TIMEOUT" resolvectl query --cache=no --legend=no --no-pager "$host" >/dev/null 2>&1; then
+        all_ready=0
+        break
+      fi
+    done
+    (( all_ready == 1 )) && return 0
+    sleep "$WG_DNS_RETRY_DELAY"
+  done
+  return 1
+}
+
+wg_ready_mode() {
+  local interface="${1:-}"
+  valid_iface "$interface" || die "invalid WireGuard interface name"
+  [[ "$interface" == "$WG_INTERFACE" ]] || die "unmanaged WireGuard interface"
+
+  # If disable removed the committed state while a queued start job was still
+  # present, do not impose any v4 policy on the restored baseline.
+  [[ -f "$STATE_FILE" && -f "$SNAPSHOT_FILE" ]] || return 0
+  state_schema_is_current || return 1
+
+  if wait_wg_endpoint_ready "$interface"; then
+    logger -t dnscrypt-toggle "WireGuard endpoint DNS is ready"
+    return 0
+  fi
+  logger -t dnscrypt-toggle "WireGuard endpoint DNS did not become ready in time"
+  return 1
+}
+
+arm_killswitch() {
+  systemctl daemon-reload || return 1
+  systemctl enable "$KILLSWITCH_UNIT" "$RECONCILE_UNIT" >/dev/null || return 1
+
+  # Load the table before publishing the persistent guard marker. If power is
+  # lost after the marker appears, NetworkManager's unit dependency reloads the
+  # table before bringing up any managed interface.
+  "$FIREWALL_HELPER" load || return 1
+  : >"$GUARD_MARKER" || return 1
+  chmod 0600 "$GUARD_MARKER" || return 1
+  systemctl start "$KILLSWITCH_UNIT" || return 1
+  "$FIREWALL_HELPER" check || return 1
+}
+
+apply_managed_files() {
+  validate_generated_dnscrypt_config || return 1
+  install_generated_file "$DNSCRYPT_TOML" 0644 emit_dnscrypt_config || return 1
+  install_generated_file "$NM_DROPIN" 0644 emit_nm_config || return 1
+  install_generated_file "$NM_UNIT_DROPIN" 0644 emit_nm_unit_dropin || return 1
+  install_generated_file "$RESOLVED_DROPIN" 0644 emit_resolved_config || return 1
+  rm -f -- "$LEGACY_DISPATCHER_PATH" || return 1
+  install_copied_file "$DISPATCHER_PATH" 0755 "$DISPATCHER_SOURCE" || return 1
+  if [[ -f "$WG_MANAGED_MARKER" ]]; then
+    install_generated_file "$WG_UNIT_DROPIN" 0644 emit_wg_unit_dropin || return 1
+  fi
+}
+
+apply_enabled_state() {
+  arm_killswitch || { err "could not arm the DNS kill-switch"; return 1; }
+  apply_managed_files || { err "could not install the managed configuration files"; return 1; }
+  systemctl daemon-reload || { err "systemd daemon-reload failed"; return 1; }
+  if [[ -f "$WG_MANAGED_MARKER" ]]; then
+    systemd-analyze verify "wg-quick@${WG_INTERFACE}.service" || {
+      err "WireGuard unit verification failed"
+      return 1
+    }
+  fi
+
+  systemctl enable dnscrypt-proxy.service systemd-resolved.service >/dev/null || {
+    err "could not enable the DNS services"
+    return 1
+  }
+  reload_nm_dns || { err "NetworkManager DNS reload failed"; return 1; }
+  systemctl restart systemd-resolved.service || { err "systemd-resolved restart failed"; return 1; }
+  ln -sfn -- /run/systemd/resolve/stub-resolv.conf "$RESOLV_CONF" || {
+    err "could not install the systemd-resolved resolv.conf symlink"
+    return 1
+  }
+  systemctl restart dnscrypt-proxy.service || { err "dnscrypt-proxy restart failed"; return 1; }
+  resolvectl flush-caches || { err "systemd-resolved cache flush failed"; return 1; }
+
+  reconcile_network || return 1
+}
+
+enabled_structure_is_intact() {
+  generated_file_matches "$DNSCRYPT_TOML" emit_dnscrypt_config || return 1
+  generated_file_matches "$NM_DROPIN" emit_nm_config || return 1
+  generated_file_matches "$NM_UNIT_DROPIN" emit_nm_unit_dropin || return 1
+  generated_file_matches "$RESOLVED_DROPIN" emit_resolved_config || return 1
+  [[ ! -e "$LEGACY_DISPATCHER_PATH" && ! -L "$LEGACY_DISPATCHER_PATH" ]] || return 1
+  copied_file_matches "$DISPATCHER_PATH" "$DISPATCHER_SOURCE" || return 1
+  if [[ -f "$WG_MANAGED_MARKER" ]]; then
+    generated_file_matches "$WG_UNIT_DROPIN" emit_wg_unit_dropin || return 1
+  fi
+
+  [[ -f "$GUARD_MARKER" ]] || return 1
+  [[ -L "$RESOLV_CONF" ]] || return 1
+  [[ "$(readlink -- "$RESOLV_CONF")" == "/run/systemd/resolve/stub-resolv.conf" ]] || return 1
+  systemctl is-active --quiet dnscrypt-proxy.service || return 1
+  systemctl is-active --quiet systemd-resolved.service || return 1
+  systemctl is-active --quiet "$KILLSWITCH_UNIT" || return 1
+  systemctl is-enabled --quiet dnscrypt-proxy.service || return 1
+  systemctl is-enabled --quiet systemd-resolved.service || return 1
+  systemctl is-enabled --quiet "$KILLSWITCH_UNIT" || return 1
+  systemctl is-enabled --quiet "$RECONCILE_UNIT" || return 1
+  "$FIREWALL_HELPER" check
+}
+
+verify_enabled_state() {
+  generated_file_matches "$DNSCRYPT_TOML" emit_dnscrypt_config || { err "managed dnscrypt-proxy.toml differs"; return 1; }
+  generated_file_matches "$NM_DROPIN" emit_nm_config || { err "managed NetworkManager drop-in differs"; return 1; }
+  generated_file_matches "$NM_UNIT_DROPIN" emit_nm_unit_dropin || { err "managed NetworkManager unit dependency differs"; return 1; }
+  generated_file_matches "$RESOLVED_DROPIN" emit_resolved_config || { err "managed systemd-resolved drop-in differs"; return 1; }
+  [[ ! -e "$LEGACY_DISPATCHER_PATH" && ! -L "$LEGACY_DISPATCHER_PATH" ]] || {
+    err "legacy campus dispatcher is active"
+    return 1
+  }
+  copied_file_matches "$DISPATCHER_PATH" "$DISPATCHER_SOURCE" || { err "managed NetworkManager dispatcher differs"; return 1; }
+  if [[ -f "$WG_MANAGED_MARKER" ]]; then
+    generated_file_matches "$WG_UNIT_DROPIN" emit_wg_unit_dropin || {
+      err "managed WireGuard ordering drop-in differs"
+      return 1
+    }
+  fi
+  [[ -f "$GUARD_MARKER" ]] || { err "persistent kill-switch guard marker is missing"; return 1; }
+  [[ -L "$RESOLV_CONF" ]] || { err "$RESOLV_CONF is not a symlink"; return 1; }
+  [[ "$(readlink -- "$RESOLV_CONF")" == "/run/systemd/resolve/stub-resolv.conf" ]] || {
+    err "$RESOLV_CONF points to an unexpected target"
+    return 1
+  }
+
+  systemctl is-active --quiet dnscrypt-proxy.service || { err "dnscrypt-proxy is not active"; return 1; }
+  systemctl is-active --quiet systemd-resolved.service || { err "systemd-resolved is not active"; return 1; }
+  systemctl is-active --quiet "$KILLSWITCH_UNIT" || { err "$KILLSWITCH_UNIT is not active"; return 1; }
+  systemctl is-enabled --quiet dnscrypt-proxy.service || { err "dnscrypt-proxy is not enabled"; return 1; }
+  systemctl is-enabled --quiet systemd-resolved.service || { err "systemd-resolved is not enabled"; return 1; }
+  systemctl is-enabled --quiet "$KILLSWITCH_UNIT" || { err "$KILLSWITCH_UNIT is not enabled"; return 1; }
+  systemctl is-enabled --quiet "$RECONCILE_UNIT" || { err "$RECONCILE_UNIT is not enabled"; return 1; }
+
+  "$FIREWALL_HELPER" check || { err "managed nftables table failed verification"; return 1; }
+  resolver_servers_are_expected || {
+    err "unexpected DNS server is still visible through systemd-resolved"
+    LC_ALL=C resolvectl dns >&2 || true
+    return 1
+  }
+  system_dns_works || { err "final system DNS verification failed"; return 1; }
+  plaintext_dns_is_blocked || { err "plaintext DNS escaped the kill-switch"; return 1; }
+}
+
+restore_snapshot() {
+  local failed=0
+
+  rm -f -- "$STATE_FILE" || failed=1
+
+  restore_path "$NM_DROPIN" || failed=1
+  restore_path "$NM_UNIT_DROPIN" || failed=1
+  restore_path "$LEGACY_DISPATCHER_PATH" || failed=1
+  restore_path "$DISPATCHER_PATH" || failed=1
+  restore_path "$WG_UNIT_DROPIN" || failed=1
+  restore_path "$RESOLVED_DROPIN" || failed=1
+  restore_path "$DNSCRYPT_TOML" || failed=1
+
+  if (( failed == 0 )); then
+    systemctl daemon-reload || failed=1
+  fi
+  if (( failed == 0 )); then
+    reload_nm_dns || failed=1
+  fi
+
+  restore_unit systemd-resolved.service || failed=1
+  if (( failed == 0 )); then
+    nmcli general reload dns-full || failed=1
+  fi
+  restore_path "$RESOLV_CONF" || failed=1
+  restore_unit dnscrypt-proxy.service || failed=1
+  cleanup_created_parents || failed=1
+
+  path_matches_snapshot "$NM_DROPIN" || { err "NetworkManager drop-in did not restore exactly"; failed=1; }
+  path_matches_snapshot "$NM_UNIT_DROPIN" || { err "NetworkManager unit drop-in did not restore exactly"; failed=1; }
+  path_matches_snapshot "$LEGACY_DISPATCHER_PATH" || { err "legacy NetworkManager dispatcher did not restore exactly"; failed=1; }
+  path_matches_snapshot "$DISPATCHER_PATH" || { err "NetworkManager dispatcher did not restore exactly"; failed=1; }
+  path_matches_snapshot "$WG_UNIT_DROPIN" || { err "WireGuard unit drop-in did not restore exactly"; failed=1; }
+  path_matches_snapshot "$RESOLVED_DROPIN" || { err "resolved drop-in did not restore exactly"; failed=1; }
+  path_matches_snapshot "$DNSCRYPT_TOML" || { err "dnscrypt-proxy.toml did not restore exactly"; failed=1; }
+  path_matches_snapshot "$RESOLV_CONF" || { err "resolv.conf did not restore exactly"; failed=1; }
+  unit_matches_snapshot systemd-resolved.service || { err "systemd-resolved state did not restore exactly"; failed=1; }
+  unit_matches_snapshot dnscrypt-proxy.service || { err "dnscrypt-proxy state did not restore exactly"; failed=1; }
+
+  (( failed == 0 )) || return 1
+
+  systemctl stop "$KILLSWITCH_UNIT" || return 1
+  systemctl disable "$RECONCILE_UNIT" "$KILLSWITCH_UNIT" >/dev/null || return 1
+  "$FIREWALL_HELPER" unload || return 1
+  # A never-started oneshot can already have been garbage-collected by
+  # systemd, in which case reset-failed reports "unit not loaded".  That is
+  # not a restoration failure.  Also avoid clearing historical failure state
+  # for the two pre-existing DNS services, since it is not part of our
+  # snapshot.
+  local own_unit
+  for own_unit in "$RECONCILE_UNIT" "$KILLSWITCH_UNIT"; do
+    systemctl reset-failed "$own_unit" >/dev/null 2>&1 || true
+  done
+  systemctl is-enabled --quiet "$KILLSWITCH_UNIT" && return 1
+  systemctl is-enabled --quiet "$RECONCILE_UNIT" && return 1
+  systemctl is-active --quiet "$KILLSWITCH_UNIT" && return 1
+  "$FIREWALL_HELPER" exists && return 1
+  rm -f -- "$GUARD_MARKER" || return 1
+
+  return 0
+}
+
+finish_clean_disable() {
+  rm -rf -- "$STATE_DIR" || return 1
+  rm -rf -- "$FIREWALL_RUNTIME_DIR" || return 1
+  rm -f -- "$GUARD_MARKER" || return 1
+  rm -f -- "$LEGACY_MANAGER_LOCK_FILE" "$LEGACY_FIREWALL_LOCK_FILE" || return 1
+}
+
+enable_mode() {
+  preflight_common
+
+  if [[ -f "$SNAPSHOT_FILE" ]]; then
+    state_schema_is_current || die "state belongs to another dnscrypt-toggle version"
+    if [[ -f "$STATE_FILE" ]]; then
+      log "Already enabled: repairing and verifying without toggling off..."
+      repair_mode
+      return
+    fi
+    log "Incomplete previous transaction detected; restoring it first..."
+    write_phase recovering
+    if ! restore_snapshot; then
+      write_phase recovery-failed
+      die "recovery failed; state was retained in $STATE_DIR"
+    fi
+    finish_clean_disable
+  elif [[ -e "$STATE_DIR" ]]; then
+    die "legacy state exists at $STATE_DIR; run the old toggle once to disable it before migration"
+  elif [[ -e "$GUARD_MARKER" ]]; then
+    die "orphaned guard marker exists at $GUARD_MARKER"
+  elif "$FIREWALL_HELPER" exists; then
+    die "orphaned nftables table detected; refusing to overwrite it without a snapshot"
+  fi
+
+  if ! create_snapshot; then
+    rm -rf -- "$STATE_DIR"
+    die "could not create a complete restore snapshot; no managed setting was changed"
+  fi
+
+  if apply_enabled_state && verify_enabled_state; then
+    if : >"$STATE_FILE" && chmod 0600 "$STATE_FILE" && write_phase enabled; then
+      log "OK: enabled, reconciled and leak-checked."
+      return 0
+    fi
+    err "could not commit the enabled-state marker"
+  fi
+
+  err "enable failed; rolling back the complete transaction"
+  write_phase rolling-back
+  if restore_snapshot; then
+    finish_clean_disable
+    err "rollback completed; previous state restored"
+  else
+    write_phase rollback-failed
+    err "rollback incomplete; kill-switch and snapshot were retained"
+  fi
+  return 1
+}
+
+disable_mode() {
+  if [[ ! -f "$SNAPSHOT_FILE" ]]; then
+    if [[ -e "$STATE_DIR" ]]; then
+      die "state exists without a valid current snapshot; refusing blind cleanup"
+    fi
+    if [[ -e "$GUARD_MARKER" ]]; then
+      die "orphaned guard marker exists without a restore snapshot"
+    fi
+    if "$FIREWALL_HELPER" exists; then
+      die "orphaned nftables table exists without a restore snapshot"
+    fi
+    log "Already disabled: no managed runtime state is present."
+    return 0
+  fi
+
+  state_schema_is_current || die "state belongs to another dnscrypt-toggle version"
+  write_phase disabling
+  if restore_snapshot; then
+    finish_clean_disable
+    log "OK: disabled; files and service states restored, nftables table removed."
+    return 0
+  fi
+
+  write_phase disable-failed
+  die "disable was not clean; fail-closed state was retained for recovery"
+}
+
+repair_mode() {
+  [[ -f "$SNAPSHOT_FILE" && -f "$STATE_FILE" ]] || die "cannot repair: mode is not enabled"
+  state_schema_is_current || die "state belongs to another dnscrypt-toggle version"
+  preflight_common
+  write_phase repairing
+
+  if apply_enabled_state && verify_enabled_state; then
+    write_phase enabled
+    log "OK: enabled state repaired and verified."
+    return 0
+  fi
+
+  write_phase repair-failed
+  die "repair failed; the DNS kill-switch was kept fail-closed"
+}
+
+boot_mode() {
+  [[ -f "$SNAPSHOT_FILE" ]] || return 0
+  state_schema_is_current || return 1
+
+  if [[ -f "$STATE_FILE" ]]; then
+    preflight_common
+    write_phase boot-reconciling
+
+    # A normal boot already has the persistent files in place.  Do not bounce
+    # resolved or DNSCrypt here: doing so created the v3 WireGuard race.  A
+    # full repair remains available, but runs only when actual drift exists.
+    if enabled_structure_is_intact; then
+      if reconcile_network && verify_enabled_state; then
+        write_phase enabled
+        log "OK: boot state reconciled and verified without service restarts."
+        return 0
+      fi
+      write_phase boot-reconcile-failed
+      return 1
+    fi
+
+    log "Managed-state drift detected at boot; repairing before dependants start..."
+    if apply_enabled_state && verify_enabled_state; then
+      write_phase enabled
+      log "OK: boot state repaired and verified."
+      return 0
+    fi
+    write_phase boot-repair-failed
+    return 1
+  fi
+
+  log "Interrupted transaction found at boot; restoring the previous state..."
+  write_phase boot-recovering
+  if restore_snapshot; then
+    finish_clean_disable
+    return 0
+  fi
+  write_phase boot-recovery-failed
+  return 1
+}
+
+dispatch_mode() {
+  local iface="${1:-}" event="${2:-}"
+  [[ -f "$STATE_FILE" && -f "$SNAPSHOT_FILE" ]] || return 0
+  state_schema_is_current || return 1
+
+  case "$event" in
+    up|down|dhcp4-change|dhcp6-change|vpn-up|vpn-down|connectivity-change|reapply) ;;
+    *) return 0 ;;
+  esac
+
+  # A disappearing link cannot pass an Internet/DNS health check.  Keep this
+  # event fast so it cannot hold up the following connection activation; the
+  # corresponding up/DHCP event performs the full reconciliation.
+  if [[ "$event" == "down" || "$event" == "vpn-down" ]]; then
+    "$FIREWALL_HELPER" check || return 1
+    if valid_iface "$iface" && systemctl is-active --quiet systemd-resolved.service; then
+      resolvectl revert "$iface" >/dev/null 2>&1 || true
+      resolvectl flush-caches || return 1
+    fi
+    logger -t dnscrypt-toggle "network teardown reconciled after $event"
+    return 0
+  fi
+
+  if ! reconcile_network; then
+    logger -t dnscrypt-toggle "network reconciliation failed after $event on ${iface:-unknown}"
+    return 1
+  fi
+  logger -t dnscrypt-toggle "network reconciled after $event on ${iface:-unknown}"
+}
+
+status_mode() {
+  local mode=disabled health=n/a kill_switch=absent path=none wg_boot_guard=not-applicable
+
+  if [[ -f "$STATE_FILE" ]]; then
+    mode="$(read_phase)"
+    path=dnscrypt
+    if verify_enabled_state; then health=healthy; else health=degraded; fi
+  elif [[ -e "$STATE_DIR" ]]; then
+    mode="$(read_phase)"
+    health="incomplete-transaction"
+  fi
+
+  if [[ -e "$GUARD_MARKER" && "$mode" == disabled ]]; then
+    mode=orphaned-guard
+    health=degraded
+  fi
+
+  if "$FIREWALL_HELPER" check; then
+    kill_switch=complete
+  elif "$FIREWALL_HELPER" exists; then
+    kill_switch=invalid
+  fi
+
+  if [[ -f "$WG_MANAGED_MARKER" ]]; then
+    if generated_file_matches "$WG_UNIT_DROPIN" emit_wg_unit_dropin; then
+      wg_boot_guard=present
+    else
+      wg_boot_guard=invalid
+    fi
+  fi
+
+  printf 'mode=%s\nhealth=%s\ndns_path=%s\ncampus_exception=disabled\nkill_switch=%s\nwg_boot_guard=%s\nnm_profiles_modified=no\nufw_modified=no\n' \
+    "$mode" "$health" "$path" "$kill_switch" "$wg_boot_guard"
+}
+
+case "$ACTION" in
+  enable) enable_mode ;;
+  disable) disable_mode ;;
+  repair) repair_mode ;;
+  status) status_mode ;;
+  boot) boot_mode ;;
+  dispatch) dispatch_mode "$@" ;;
+  wg-ready) wg_ready_mode "$@" ;;
+  *)
+    printf 'Usage: %s {enable|disable|repair|status}\n' "$0" >&2
+    exit 2
+    ;;
+esac

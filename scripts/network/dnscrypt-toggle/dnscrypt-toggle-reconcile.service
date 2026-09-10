@@ -1,0 +1,13 @@
+[Unit]
+Description=Reconcile dnscrypt-toggle after network startup
+Wants=network-online.target dnscrypt-proxy.service systemd-resolved.service
+After=NetworkManager.service network-online.target dnscrypt-proxy.service systemd-resolved.service
+Requires=dnscrypt-toggle-killswitch.service
+ConditionPathExists=/var/lib/dnscrypt-toggle/snapshot-complete
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/dnscrypt-toggle boot
+
+[Install]
+WantedBy=multi-user.target

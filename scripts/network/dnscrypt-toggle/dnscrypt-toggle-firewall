@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+umask 077
+
+readonly SAFE_PATH="/usr/local/sbin:/usr/local/bin:/usr/bin"
+PATH="$SAFE_PATH"
+export PATH
+
+readonly NFT_BIN="/usr/bin/nft"
+readonly TABLE_FAMILY="inet"
+readonly TABLE_NAME="dnscrypt_toggle"
+readonly RUNTIME_DIR="/run/dnscrypt-toggle-firewall"
+readonly LOCK_FILE="${RUNTIME_DIR}/operation.lock"
+
+TEMP_FILE=""
+
+cleanup() {
+  [[ -z "$TEMP_FILE" ]] || rm -f -- "$TEMP_FILE"
+}
+trap cleanup EXIT
+
+die() {
+  printf 'ERROR: %s\n' "$*" >&2
+  exit 1
+}
+
+(( EUID == 0 )) || die "must run as root"
+[[ -x "$NFT_BIN" ]] || die "missing $NFT_BIN"
+
+acquire_firewall_lock() {
+  mkdir -p -- "$RUNTIME_DIR"
+  chmod 0700 -- "$RUNTIME_DIR"
+  exec 9>"$LOCK_FILE"
+  flock -w 20 9 || die "firewall operation is already running"
+}
+
+make_runtime_temp() {
+  mktemp --tmpdir="$RUNTIME_DIR" "dnscrypt-toggle-nft.XXXXXX"
+}
+
+table_exists() {
+  "$NFT_BIN" list table "$TABLE_FAMILY" "$TABLE_NAME" >/dev/null 2>&1
+}
+
+emit_table() {
+  cat <<'EOF'
+table inet dnscrypt_toggle {
+    chain output {
+        type filter hook output priority -150; policy accept;
+
+        oifname "lo" accept comment "dnscrypt-toggle:loopback"
+        udp dport { 53, 853 } reject comment "dnscrypt-toggle:dns-dot-doq-udp"
+        tcp dport { 53, 853 } reject with tcp reset comment "dnscrypt-toggle:dns-dot-tcp"
+    }
+}
+EOF
+}
+
+make_batch() {
+  local mode="$1" output="$2"
+
+  : >"$output"
+  if [[ "$mode" == "refresh" ]]; then
+    printf 'flush table %s %s\n' "$TABLE_FAMILY" "$TABLE_NAME" >>"$output"
+  fi
+  emit_table >>"$output"
+}
+
+validate_batch() {
+  local mode="create"
+  table_exists && mode="refresh"
+  # Validation is never run by the sandboxed systemd unit and must not leave
+  # a runtime directory behind while the toggle is disabled.
+  TEMP_FILE="$(mktemp --tmpdir=/run dnscrypt-toggle-nft-check.XXXXXX)"
+  make_batch "$mode" "$TEMP_FILE"
+  "$NFT_BIN" --check --file "$TEMP_FILE"
+  rm -f -- "$TEMP_FILE"
+  TEMP_FILE=""
+}
+
+load_table() {
+  local mode="create"
+  table_exists && mode="refresh"
+
+  TEMP_FILE="$(make_runtime_temp)"
+  make_batch "$mode" "$TEMP_FILE"
+  "$NFT_BIN" --check --file "$TEMP_FILE"
+  "$NFT_BIN" --file "$TEMP_FILE"
+  check_table
+  rm -f -- "$TEMP_FILE"
+  TEMP_FILE=""
+}
+
+unload_table() {
+  if table_exists; then
+    "$NFT_BIN" delete table "$TABLE_FAMILY" "$TABLE_NAME"
+  fi
+  ! table_exists
+}
+
+marker_count() {
+  local listing="$1" marker="$2" count
+  count="$(grep -Foc -- "comment \"$marker\"" <<<"$listing" || true)"
+  printf '%s\n' "$count"
+}
+
+check_table() {
+  local listing marker chain_count rule_count
+  listing="$(LC_ALL=C "$NFT_BIN" list table "$TABLE_FAMILY" "$TABLE_NAME" 2>/dev/null)" || return 1
+
+  chain_count="$(grep -Ec '^[[:space:]]*chain[[:space:]]+' <<<"$listing" || true)"
+  [[ "$chain_count" == "1" ]] || return 1
+  grep -Eq '^[[:space:]]*chain[[:space:]]+output[[:space:]]*\{' <<<"$listing" || return 1
+  grep -Eq '^[[:space:]]*type filter hook output priority (mangle|-150); policy accept;' <<<"$listing" || return 1
+
+  # nft prints one canonical statement per line for this deliberately small
+  # chain.  Refuse extra rules as well as missing ones: this table is owned
+  # exclusively by dnscrypt-toggle.
+  rule_count="$({
+    awk '
+      /^[[:space:]]*chain[[:space:]]+output[[:space:]]*\{/ { in_output=1; next }
+      in_output && /^[[:space:]]*type filter hook output / { next }
+      in_output && /^[[:space:]]*}/ { in_output=0; next }
+      in_output && !/^[[:space:]]*$/ { count++ }
+      END { print count + 0 }
+    ' <<<"$listing"
+  })"
+  [[ "$rule_count" == "3" ]] || return 1
+
+  for marker in \
+    dnscrypt-toggle:loopback \
+    dnscrypt-toggle:dns-dot-doq-udp \
+    dnscrypt-toggle:dns-dot-tcp; do
+    [[ "$(marker_count "$listing" "$marker")" == "1" ]] || return 1
+  done
+}
+
+case "${1:-}" in
+  validate) validate_batch ;;
+  load) acquire_firewall_lock; load_table ;;
+  unload) acquire_firewall_lock; unload_table ;;
+  check) check_table ;;
+  exists) table_exists ;;
+  *)
+    printf 'Usage: %s {validate|load|unload|check|exists}\n' "$0" >&2
+    exit 2
+    ;;
+esac

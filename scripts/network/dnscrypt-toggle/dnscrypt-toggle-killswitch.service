@@ -1,0 +1,27 @@
+[Unit]
+Description=Early DNS and DoT/DoQ kill-switch for dnscrypt-toggle
+Documentation=man:nft(8)
+Wants=network-pre.target
+Before=network-pre.target NetworkManager.service
+Before=shutdown.target
+Conflicts=shutdown.target
+DefaultDependencies=no
+ConditionPathExists=/etc/dnscrypt-toggle-enabled
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/dnscrypt-toggle-firewall load
+ExecReload=/usr/local/libexec/dnscrypt-toggle-firewall load
+ExecStop=/usr/local/libexec/dnscrypt-toggle-firewall unload
+RemainAfterExit=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+RuntimeDirectory=dnscrypt-toggle-firewall
+RuntimeDirectoryMode=0700
+CapabilityBoundingSet=CAP_NET_ADMIN
+AmbientCapabilities=CAP_NET_ADMIN
+
+[Install]
+WantedBy=network-pre.target
