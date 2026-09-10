@@ -57,6 +57,8 @@ client.background       $bg
 for_window [class="^.*"] border pixel 2
 gaps inner 10
 gaps outer 2
+gaps top 36
+gaps bottom 36
 
 # ---------------------------
 # Focus navigation (vim-style & arrows)
@@ -186,13 +188,14 @@ floating_modifier $mod
 exec --no-startup-id nm-applet
 exec_always --no-startup-id xss-lock --transfer-sleep-lock -- ~/.config/i3/lock.sh
 exec_always --no-startup-id xset s 120 dpms 0 0 0
-# exec_always --no-startup-id sh -c 'sleep 0.3 && ~/.config/i3/refresh-theme.sh'
-exec_always --no-startup-id sh -c 'sleep 0.3 && ~/.config/i3/refresh-theme.sh "$HOME/Wallpapers/lain.jpg"'
+exec_always --no-startup-id sh -c 'sleep 0.3 && ~/.config/i3/refresh-theme.sh'
+# exec_always --no-startup-id sh -c 'sleep 0.3 && ~/.config/i3/refresh-theme.sh "$HOME/Wallpapers/lain.jpg"'
 exec_always --no-startup-id picom -f
 exec_always --no-startup-id sh -c 'sleep 0.5 && ~/.config/dunst/launch.sh'
 exec_always --no-startup-id python3 ~/.config/i3/autotiling.py
 exec --no-startup-id ~/.config/i3/tmux-watchdog.sh
 exec --no-startup-id ~/.config/i3/display-watch.sh
+exec_always --no-startup-id ~/.config/i3/polybar-fullscreen.py
 exec_always --no-startup-id tmux new-session -d -s preload # Avoid problem with first terminal
 exec --no-startup-id bash -c 'cat /proc/acpi/button/lid/*/state >/dev/null 2>&1' # Avoid problem with first lid closure
 

@@ -19,6 +19,9 @@ height = 34
 fixed-center = true
 enable-ipc = true
 
+override-redirect = true
+enable-struts = false
+
 background = ${colors.background}
 foreground = ${colors.foreground}
 
@@ -47,7 +50,11 @@ monitor = ${env:MONITOR:}
 width = 100%
 height = 34
 fixed-center = true
+enable-ipc = true
 bottom = true
+
+override-redirect = true
+enable-struts = false
 
 background = ${colors.background}
 foreground = ${colors.foreground}
@@ -277,4 +284,3 @@ label = %output%
 # ---------------------------
 [settings]
 screenchange-reload = false
-
