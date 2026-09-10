@@ -188,8 +188,8 @@ floating_modifier $mod
 exec --no-startup-id nm-applet
 exec_always --no-startup-id xss-lock --transfer-sleep-lock -- ~/.config/i3/lock.sh
 exec_always --no-startup-id xset s 120 dpms 0 0 0
-exec_always --no-startup-id sh -c 'sleep 0.3 && ~/.config/i3/refresh-theme.sh'
-# exec_always --no-startup-id sh -c 'sleep 0.3 && ~/.config/i3/refresh-theme.sh "$HOME/Wallpapers/active/lain.jpg"'
+# exec --no-startup-id sh -c 'sleep 0.3 && ~/.config/i3/refresh-theme.sh'
+exec --no-startup-id sh -c 'sleep 0.3 && ~/.config/i3/refresh-theme.sh "$HOME/Wallpapers/active/lain.jpg"'
 exec_always --no-startup-id picom -f
 exec_always --no-startup-id sh -c 'sleep 0.5 && ~/.config/dunst/launch.sh'
 exec_always --no-startup-id python3 ~/.config/i3/autotiling.py
