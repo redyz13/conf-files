@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+LOG_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/polybar"
+mkdir -p "$LOG_DIR"
+
+LOG_FILE="$LOG_DIR/polybar.log"
+: > "$LOG_FILE"
+exec </dev/null >>"$LOG_FILE" 2>&1
+
 killall -q polybar 2>/dev/null || true
 
 for _ in {1..25}; do
