@@ -204,6 +204,8 @@ exec --no-startup-id bash -c 'cat /proc/acpi/button/lid/*/state >/dev/null 2>&1'
 # ---------------------------
 bindsym $mod+Return exec --no-startup-id i3-sensible-terminal -e ~/.config/i3/tmux.sh
 bindsym $mod+KP_Enter exec --no-startup-id i3-sensible-terminal -e ~/.config/i3/tmux.sh
+bindsym $mod+Shift+w exec --no-startup-id ~/.config/i3/refresh-theme.sh
+bindsym $mod+Ctrl+w exec --no-startup-id ~/.config/i3/refresh-theme.sh "$HOME/Wallpapers/active/lain.jpg"
 bindsym $mod+d exec rofi -show drun -font 'Hack Nerd Font 12'
 bindsym $mod+period exec "rofimoji --action type"
 bindsym $mod+Shift+p exec --no-startup-id ~/.config/i3/power_saving.sh
