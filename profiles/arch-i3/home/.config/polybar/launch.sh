@@ -7,6 +7,82 @@ LOG_FILE="$LOG_DIR/polybar.log"
 : > "$LOG_FILE"
 exec </dev/null >>"$LOG_FILE" 2>&1
 
+stop_bars() {
+    local -a old_pids=()
+    local -a child_pids=()
+
+    mapfile -t old_pids < <(pgrep -u "$UID" -x polybar)
+
+    if ((${#old_pids[@]} == 0)); then
+        return 0
+    fi
+
+    for pid in "${old_pids[@]}"; do
+        while read -r child_pid; do
+            [[ -n "$child_pid" ]] && child_pids+=("$child_pid")
+        done < <(pgrep -P "$pid" 2>/dev/null || true)
+    done
+
+    kill -TERM "${old_pids[@]}" 2>/dev/null || true
+
+    for _ in {1..200}; do
+        alive=0
+
+        for pid in "${old_pids[@]}"; do
+            if kill -0 "$pid" 2>/dev/null; then
+                alive=1
+                break
+            fi
+        done
+
+        [[ "$alive" -eq 0 ]] && break
+        sleep 0.01
+    done
+
+    for pid in "${old_pids[@]}"; do
+        if kill -0 "$pid" 2>/dev/null &&
+           [[ "$(cat "/proc/$pid/comm" 2>/dev/null)" == "polybar" ]]; then
+            kill -KILL "$pid" 2>/dev/null || true
+        fi
+    done
+
+    if ((${#child_pids[@]} > 0)); then
+        for _ in {1..100}; do
+            alive=0
+
+            for pid in "${child_pids[@]}"; do
+                if kill -0 "$pid" 2>/dev/null; then
+                    alive=1
+                    break
+                fi
+            done
+
+            [[ "$alive" -eq 0 ]] && return 0
+            sleep 0.01
+        done
+
+        kill -TERM "${child_pids[@]}" 2>/dev/null || true
+
+        for _ in {1..100}; do
+            alive=0
+
+            for pid in "${child_pids[@]}"; do
+                if kill -0 "$pid" 2>/dev/null; then
+                    alive=1
+                    break
+                fi
+            done
+
+            [[ "$alive" -eq 0 ]] && return 0
+            sleep 0.01
+        done
+
+        kill -KILL "${child_pids[@]}" 2>/dev/null || true
+    fi
+
+    return 0
+}
+
 replace_bars() {
     if ! command -v xdotool >/dev/null 2>&1; then
         return 1
@@ -139,21 +215,19 @@ replace_bars() {
     done
 }
 
-if [[ "${1:-}" == "--replace" ]]; then
-    replace_bars
-    exit $?
-fi
+case "${1:-}" in
+    --replace)
+        replace_bars
+        exit $?
+        ;;
 
-killall -q polybar 2>/dev/null || true
+    --stop)
+        stop_bars
+        exit $?
+        ;;
+esac
 
-for _ in {1..25}; do
-    pgrep -u "$UID" -x polybar >/dev/null || break
-    sleep 0.2
-done
-
-if pgrep -u "$UID" -x polybar >/dev/null; then
-    killall -q -9 polybar
-fi
+stop_bars
 
 BATTERY=$(ls /sys/class/power_supply/ 2>/dev/null | grep -E '^BAT' | head -n1)
 ADAPTER=$(ls /sys/class/power_supply/ 2>/dev/null | grep -E '^(AC|ACAD|ADP)' | head -n1)

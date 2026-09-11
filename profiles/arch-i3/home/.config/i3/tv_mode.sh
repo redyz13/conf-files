@@ -3,6 +3,7 @@
 set -euo pipefail
 
 DISPLAY_APPLY="$HOME/.config/i3/display_apply.sh"
+POLYBAR_LAUNCH="$HOME/.config/polybar/launch.sh"
 
 STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/tv-mode"
 WORKSPACE_STATE="$STATE_DIR/workspaces.json"
@@ -63,6 +64,7 @@ fallback = next(
 
 focused = None
 visible = []
+commands = []
 
 def quote(value):
     return str(value).replace("\\", "\\\\").replace('"', '\\"')
@@ -74,13 +76,9 @@ for workspace in workspaces:
     if output not in active_names:
         output = fallback
 
-    subprocess.check_call(
-        [
-            "i3-msg",
-            f'workspace "{quote(name)}"; '
-            f'move workspace to output "{quote(output)}"',
-        ],
-        stdout=subprocess.DEVNULL,
+    commands.append(
+        f'workspace "{quote(name)}"; '
+        f'move workspace to output "{quote(output)}"'
     )
 
     if workspace["visible"]:
@@ -90,14 +88,14 @@ for workspace in workspaces:
         focused = name
 
 for workspace in visible:
-    subprocess.check_call(
-        ["i3-msg", f'workspace "{quote(workspace)}"'],
-        stdout=subprocess.DEVNULL,
-    )
+    commands.append(f'workspace "{quote(workspace)}"')
 
 if focused is not None:
+    commands.append(f'workspace "{quote(focused)}"')
+
+if commands:
     subprocess.check_call(
-        ["i3-msg", f'workspace "{quote(focused)}"'],
+        ["i3-msg", "; ".join(commands)],
         stdout=subprocess.DEVNULL,
     )
 PY
@@ -156,6 +154,36 @@ enable_tv_mode() {
     notify "ON · External display only"
 }
 
+wait_for_display_settle() {
+    local previous=""
+    local current=""
+    local stable=0
+
+    for _ in {1..100}; do
+        current="$(
+            {
+                xrandr --listactivemonitors || true
+                i3-msg -t get_outputs || true
+            } 2>/dev/null |
+                sha256sum |
+                awk '{print $1}'
+        )"
+
+        if [[ "$current" == "$previous" ]]; then
+            ((stable += 1))
+        else
+            previous="$current"
+            stable=0
+        fi
+
+        ((stable >= 3)) && return 0
+
+        sleep 0.02
+    done
+
+    return 1
+}
+
 restore_tv_state() {
     local mode="$1"
 
@@ -164,15 +192,27 @@ restore_tv_state() {
         return 1
     fi
 
-    if ! "$DISPLAY_APPLY" "$mode"; then
+    if ! "$POLYBAR_LAUNCH" --stop; then
+        notify "Could not stop Polybar cleanly"
+        return 1
+    fi
+
+    if ! DEFER_POLYBAR=1 "$DISPLAY_APPLY" "$mode"; then
+        "$POLYBAR_LAUNCH" >/dev/null 2>&1 || true
         notify "Could not restore display layout · State kept for retry"
         return 1
     fi
 
-    sleep 0.2
-
     if ! restore_workspaces; then
+        "$POLYBAR_LAUNCH" >/dev/null 2>&1 || true
         notify "Display restored · Workspace state kept for retry"
+        return 1
+    fi
+
+    wait_for_display_settle || true
+
+    if ! "$POLYBAR_LAUNCH" >/dev/null 2>&1; then
+        notify "Display restored · Could not relaunch Polybar"
         return 1
     fi
 

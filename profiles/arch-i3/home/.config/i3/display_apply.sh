@@ -118,7 +118,9 @@ if [[ -n "$wallpaper" && -f "$wallpaper" ]]; then
     feh --no-fehbg --bg-fill "$wallpaper"
 fi
 
-"$HOME/.config/polybar/launch.sh"
+if [[ "${DEFER_POLYBAR:-0}" != "1" ]]; then
+    "$HOME/.config/polybar/launch.sh"
+fi
 
 MODE_STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/display-mode"
 mkdir -p "$MODE_STATE_DIR"
