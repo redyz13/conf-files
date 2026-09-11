@@ -140,7 +140,7 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 # ---------------------------
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+e exec --no-startup-id ~/.config/i3/confirm-exit.sh
 
 # ---------------------------
 # Gaps adjustment mode
@@ -250,10 +250,10 @@ set $mode_display Display: (a) auto, (l) left, (r) right, (m) mirror, (t) TV
 bindsym $mod+Ctrl+d mode "$mode_display"
 
 mode "$mode_display" {
-    bindsym a exec --no-startup-id ~/.config/i3/display_apply.sh auto, mode "default"
-    bindsym l exec --no-startup-id ~/.config/i3/display_apply.sh left, mode "default"
-    bindsym r exec --no-startup-id ~/.config/i3/display_apply.sh right, mode "default"
-    bindsym m exec --no-startup-id ~/.config/i3/display_apply.sh mirror, mode "default"
+    bindsym a exec --no-startup-id ~/.config/i3/tv_mode.sh auto, mode "default"
+    bindsym l exec --no-startup-id ~/.config/i3/tv_mode.sh left, mode "default"
+    bindsym r exec --no-startup-id ~/.config/i3/tv_mode.sh right, mode "default"
+    bindsym m exec --no-startup-id ~/.config/i3/tv_mode.sh mirror, mode "default"
     bindsym t exec --no-startup-id ~/.config/i3/tv_mode.sh, mode "default"
     bindsym Return mode "default"
     bindsym Escape mode "default"

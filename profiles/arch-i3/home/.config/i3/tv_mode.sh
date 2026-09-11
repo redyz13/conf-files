@@ -11,6 +11,8 @@ ACTIVE_STATE="$STATE_DIR/active"
 
 MODE_STATE="${XDG_RUNTIME_DIR:-/tmp}/display-mode/current"
 
+REQUESTED_MODE="${1:-toggle}"
+
 notify() {
     notify-send "TV Mode" "$1" || true
 }
@@ -36,6 +38,29 @@ import sys
 with open(sys.argv[1]) as f:
     workspaces = json.load(f)
 
+outputs = json.loads(
+    subprocess.check_output(
+        ["i3-msg", "-t", "get_outputs"],
+        text=True,
+    )
+)
+
+active_outputs = [output for output in outputs if output.get("active")]
+
+if not active_outputs:
+    raise SystemExit("No active i3 outputs")
+
+active_names = {output["name"] for output in active_outputs}
+
+fallback = next(
+    (
+        output["name"]
+        for output in active_outputs
+        if output.get("primary")
+    ),
+    active_outputs[0]["name"],
+)
+
 focused = None
 visible = []
 
@@ -43,36 +68,36 @@ def quote(value):
     return str(value).replace("\\", "\\\\").replace('"', '\\"')
 
 for workspace in workspaces:
-    name = quote(workspace["name"])
-    output = quote(workspace["output"])
+    name = workspace["name"]
+    output = workspace["output"]
+
+    if output not in active_names:
+        output = fallback
 
     subprocess.check_call(
         [
             "i3-msg",
-            f'workspace "{name}"; move workspace to output "{output}"',
+            f'workspace "{quote(name)}"; '
+            f'move workspace to output "{quote(output)}"',
         ],
         stdout=subprocess.DEVNULL,
     )
 
     if workspace["visible"]:
-        visible.append(workspace["name"])
+        visible.append(name)
 
     if workspace["focused"]:
-        focused = workspace["name"]
+        focused = name
 
 for workspace in visible:
-    name = quote(workspace)
-
     subprocess.check_call(
-        ["i3-msg", f'workspace "{name}"'],
+        ["i3-msg", f'workspace "{quote(workspace)}"'],
         stdout=subprocess.DEVNULL,
     )
 
 if focused is not None:
-    name = quote(focused)
-
     subprocess.check_call(
-        ["i3-msg", f'workspace "{name}"'],
+        ["i3-msg", f'workspace "{quote(focused)}"'],
         stdout=subprocess.DEVNULL,
     )
 PY
@@ -121,7 +146,6 @@ enable_tv_mode() {
         exit 1
     fi
 
-    # From this point another invocation always attempts recovery.
     touch "$ACTIVE_STATE"
 
     if ! "$DISPLAY_APPLY" external; then
@@ -132,8 +156,31 @@ enable_tv_mode() {
     notify "ON · External display only"
 }
 
+restore_tv_state() {
+    local mode="$1"
+
+    if [[ ! -f "$WORKSPACE_STATE" ]]; then
+        notify "Saved TV Mode state is incomplete"
+        return 1
+    fi
+
+    if ! "$DISPLAY_APPLY" "$mode"; then
+        notify "Could not restore display layout · State kept for retry"
+        return 1
+    fi
+
+    sleep 0.2
+
+    if ! restore_workspaces; then
+        notify "Display restored · Workspace state kept for retry"
+        return 1
+    fi
+
+    rm -rf "$STATE_DIR"
+}
+
 disable_tv_mode() {
-    if [[ ! -f "$PREVIOUS_MODE" || ! -f "$WORKSPACE_STATE" ]]; then
+    if [[ ! -f "$PREVIOUS_MODE" ]]; then
         notify "Saved TV Mode state is incomplete"
         exit 1
     fi
@@ -141,25 +188,43 @@ disable_tv_mode() {
     local mode
     mode="$(<"$PREVIOUS_MODE")"
 
-    if ! "$DISPLAY_APPLY" "$mode"; then
-        notify "Could not restore display layout · State kept for retry"
+    if ! restore_tv_state "$mode"; then
         exit 1
     fi
-
-    sleep 0.2
-
-    if ! restore_workspaces; then
-        notify "Display restored · Workspace state kept for retry"
-        exit 1
-    fi
-
-    rm -rf "$STATE_DIR"
 
     notify "OFF · Previous state restored"
 }
 
-if [[ -f "$ACTIVE_STATE" ]]; then
-    disable_tv_mode
-else
-    enable_tv_mode
-fi
+apply_requested_mode() {
+    local mode="$1"
+
+    if [[ -f "$ACTIVE_STATE" ]]; then
+        if ! restore_tv_state "$mode"; then
+            exit 1
+        fi
+
+        notify "OFF · Workspace state restored"
+        return
+    fi
+
+    "$DISPLAY_APPLY" "$mode"
+}
+
+case "$REQUESTED_MODE" in
+    toggle)
+        if [[ -f "$ACTIVE_STATE" ]]; then
+            disable_tv_mode
+        else
+            enable_tv_mode
+        fi
+        ;;
+
+    auto|left|right|mirror)
+        apply_requested_mode "$REQUESTED_MODE"
+        ;;
+
+    *)
+        echo "Usage: $0 [auto|left|right|mirror]" >&2
+        exit 2
+        ;;
+esac

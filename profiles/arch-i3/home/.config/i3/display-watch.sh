@@ -2,7 +2,7 @@
 
 set -u
 
-APPLY="$HOME/.config/i3/display_apply.sh"
+APPLY="$HOME/.config/i3/tv_mode.sh"
 LOCK_FILE="${XDG_RUNTIME_DIR:-/tmp}/display-watch.lock"
 
 exec 9>"$LOCK_FILE" || exit 1
