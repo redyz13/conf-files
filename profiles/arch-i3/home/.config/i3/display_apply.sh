@@ -4,6 +4,7 @@ set -euo pipefail
 
 LAPTOP_DPI=110
 MODE="${1:-auto}"
+WALLPAPER_OVERRIDE="${2:-}"
 
 mapfile -t CONNECTED < <(
     xrandr --query |
@@ -107,9 +108,14 @@ case "$MODE" in
         ;;
 esac
 
-if [[ -f "$HOME/.cache/wal/wal" ]]; then
+wallpaper="$WALLPAPER_OVERRIDE"
+
+if [[ -z "$wallpaper" && -f "$HOME/.cache/wal/wal" ]]; then
     wallpaper="$(<"$HOME/.cache/wal/wal")"
-    [[ -n "$wallpaper" ]] && feh --bg-fill "$wallpaper"
+fi
+
+if [[ -n "$wallpaper" && -f "$wallpaper" ]]; then
+    feh --no-fehbg --bg-fill "$wallpaper"
 fi
 
 "$HOME/.config/polybar/launch.sh"
