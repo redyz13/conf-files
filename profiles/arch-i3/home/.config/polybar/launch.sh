@@ -7,6 +7,143 @@ LOG_FILE="$LOG_DIR/polybar.log"
 : > "$LOG_FILE"
 exec </dev/null >>"$LOG_FILE" 2>&1
 
+replace_bars() {
+    if ! command -v xdotool >/dev/null 2>&1; then
+        return 1
+    fi
+
+    mapfile -t old_pids < <(pgrep -u "$UID" -x polybar)
+
+    if ((${#old_pids[@]} == 0)); then
+        return 1
+    fi
+
+    local -a new_pids=()
+    local -a was_visible=()
+
+    for old_pid in "${old_pids[@]}"; do
+        if [[ ! -r "/proc/$old_pid/environ" || ! -r "/proc/$old_pid/cmdline" ]]; then
+            kill -9 "${new_pids[@]}" 2>/dev/null || true
+            return 1
+        fi
+
+        if xdotool search --onlyvisible --pid "$old_pid" >/dev/null 2>&1; then
+            was_visible+=(1)
+        else
+            was_visible+=(0)
+        fi
+
+        bar="$(
+            tr '\0' '\n' < "/proc/$old_pid/cmdline" |
+                tail -n1
+        )"
+
+        case "$bar" in
+            bar_top|bar_bottom)
+                ;;
+            *)
+                kill -9 "${new_pids[@]}" 2>/dev/null || true
+                return 1
+                ;;
+        esac
+
+        (
+            while IFS= read -r -d '' entry; do
+                export "$entry"
+            done < "/proc/$old_pid/environ"
+
+            exec polybar --reload "$bar"
+        ) &
+
+        new_pids+=("$!")
+    done
+
+    for i in "${!new_pids[@]}"; do
+        new_pid="${new_pids[$i]}"
+        mapped=0
+
+        for _ in {1..400}; do
+            if ! kill -0 "$new_pid" 2>/dev/null; then
+                break
+            fi
+
+            if xdotool search --onlyvisible --pid "$new_pid" >/dev/null 2>&1; then
+                mapped=1
+                break
+            fi
+
+            sleep 0.005
+        done
+
+        if [[ "$mapped" -ne 1 ]]; then
+            kill -9 "${new_pids[@]}" 2>/dev/null || true
+            return 1
+        fi
+
+        if [[ "${was_visible[$i]}" -eq 0 ]]; then
+            polybar-msg -p "$new_pid" cmd hide >/dev/null 2>&1
+
+            hidden=0
+
+            for _ in {1..100}; do
+                if ! xdotool search --onlyvisible --pid "$new_pid" >/dev/null 2>&1; then
+                    hidden=1
+                    break
+                fi
+
+                sleep 0.002
+            done
+
+            if [[ "$hidden" -ne 1 ]]; then
+                kill -9 "${new_pids[@]}" 2>/dev/null || true
+                return 1
+            fi
+        fi
+    done
+
+    local -a hide_jobs=()
+
+    for i in "${!old_pids[@]}"; do
+        if [[ "${was_visible[$i]}" -eq 1 ]]; then
+            polybar-msg -p "${old_pids[$i]}" cmd hide >/dev/null 2>&1 &
+            hide_jobs+=("$!")
+        fi
+    done
+
+    for job in "${hide_jobs[@]}"; do
+        wait "$job" 2>/dev/null || true
+    done
+
+    kill -TERM "${old_pids[@]}" 2>/dev/null || true
+
+    for _ in {1..200}; do
+        alive=0
+
+        for pid in "${old_pids[@]}"; do
+            if kill -0 "$pid" 2>/dev/null; then
+                alive=1
+                break
+            fi
+        done
+
+        [[ "$alive" -eq 0 ]] && return 0
+
+        sleep 0.01
+    done
+
+    for pid in "${old_pids[@]}"; do
+        if kill -0 "$pid" 2>/dev/null &&
+           [[ "$(cat "/proc/$pid/comm" 2>/dev/null)" == "polybar" ]]; then
+            kill -KILL "$pid" 2>/dev/null || true
+        fi
+    done
+}
+
+if [[ "${1:-}" == "--replace" ]]; then
+    replace_bars
+    exit $?
+fi
+
 killall -q polybar 2>/dev/null || true
 
 for _ in {1..25}; do

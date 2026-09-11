@@ -1,8 +1,9 @@
 #!/bin/bash
+
 WAL_COLORS="$HOME/.cache/wal/colors"
 DUNST_CONFIG="$HOME/.config/dunst/dunstrc"
 
-if [ ! -f "$WAL_COLORS" ]; then
+if [[ ! -f "$WAL_COLORS" ]]; then
     exit 1
 fi
 
@@ -40,7 +41,8 @@ cat <<EOF > "$DUNST_CONFIG"
     frame_color = "${colors[1]}"
 EOF
 
-pkill -x dunst 2>/dev/null || true
-
-dunst -conf "$DUNST_CONFIG" &
-
+if pgrep -x dunst >/dev/null; then
+    dunstctl reload "$DUNST_CONFIG"
+else
+    dunst -conf "$DUNST_CONFIG" &
+fi
