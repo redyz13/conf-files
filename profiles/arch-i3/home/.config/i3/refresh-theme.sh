@@ -2,6 +2,7 @@
 
 ACTIVE_DIR="$HOME/Wallpapers/active"
 WAL_DIR="$HOME/.cache/wal"
+STARTUP_WALLPAPER_FILE="${XDG_RUNTIME_DIR:-/tmp}/archlain-startup-wallpaper"
 
 CACHE_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}/archlain/theme-cache"
 BUNDLES_DIR="$CACHE_ROOT/bundles"
@@ -10,6 +11,46 @@ BUILD_CACHE="$HOME/.config/i3/build-theme-cache.sh"
 POLYBAR_LAUNCH="$HOME/.config/polybar/launch.sh"
 DUNST_LAUNCH="$HOME/.config/dunst/launch.sh"
 NVIM_RELOAD="$HOME/.config/i3/reload-colors-nvim.sh"
+
+prepare_startup_wallpaper() {
+    local requested="${1:-}"
+    local selected=""
+    local current
+
+    if [[ -n "$requested" ]]; then
+        selected="$(realpath -e "$requested")" || return 1
+    else
+        current="$(cat "$WAL_DIR/wal" 2>/dev/null)"
+
+        while IFS= read -r -d '' selected; do
+            [[ "$selected" == "$current" ]] && continue
+            break
+        done < <(
+            find "$ACTIVE_DIR" -maxdepth 1 -type f -print0 |
+                shuf -z
+        )
+
+        selected="$(realpath -e "$selected")" || return 1
+    fi
+
+    case "$selected" in
+        "$ACTIVE_DIR"/*)
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+
+    [[ -f "$selected" ]] || return 1
+
+    printf '%s\n' "$selected" > "$STARTUP_WALLPAPER_FILE"
+    printf '%s\n' "$selected"
+}
+
+if [[ "${1:-}" == "--prepare-startup" ]]; then
+    prepare_startup_wallpaper "${2:-}"
+    exit $?
+fi
 
 lock="${XDG_RUNTIME_DIR:-/tmp}/refresh-theme.lock"
 exec 9>"$lock" || exit 1
@@ -168,6 +209,15 @@ apply_theme() {
         wait "$dunst_pid" 2>/dev/null || true
     fi
 }
+
+if [[ "${1:-}" == "--startup" ]]; then
+    startup_wallpaper="$(
+        cat "$STARTUP_WALLPAPER_FILE" 2>/dev/null
+    )" || exit 1
+
+    apply_theme "$startup_wallpaper"
+    exit $?
+fi
 
 current="$(cat "$WAL_DIR/wal" 2>/dev/null)"
 
