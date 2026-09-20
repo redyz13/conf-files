@@ -40,6 +40,7 @@ linux-firmware-intel
 linux-firmware-realtek
 lua51-socket
 lxappearance
+ly
 maim
 man-db
 maven
@@ -65,7 +66,6 @@ pipewire-pulse
 polybar
 powerline
 powerline-fonts
-python-colorthief
 python-dbus
 python-evdev
 python-i3ipc
