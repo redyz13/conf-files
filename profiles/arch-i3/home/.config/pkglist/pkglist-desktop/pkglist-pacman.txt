@@ -30,6 +30,7 @@ gammastep
 git
 gnome-themes-extra
 grub
+guvcview
 gvim
 htop
 i3-wm
