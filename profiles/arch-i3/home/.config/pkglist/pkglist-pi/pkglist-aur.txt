@@ -1,2 +1,3 @@
+cbonsai
 tmux-custom
 yay

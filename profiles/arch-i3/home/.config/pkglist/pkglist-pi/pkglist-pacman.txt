@@ -1,4 +1,5 @@
 archlinuxarm-keyring
+asciiquarium
 base
 base-devel
 bash-completion
@@ -21,6 +22,7 @@ man-pages
 mkvtoolnix-cli
 nano
 ncdu
+neovim
 net-tools
 netctl
 nftables
