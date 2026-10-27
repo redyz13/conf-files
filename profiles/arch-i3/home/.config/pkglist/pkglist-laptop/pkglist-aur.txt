@@ -5,10 +5,11 @@ i3lock-color
 notion-app-electron
 pfetch
 phonon-qt6-mpv
-python-pywal
+python-pywal16
 spotify
 tmux-custom
 tmux-custom-debug
 vesktop
+vibrant-cli
 xlayoutdisplay
 yay

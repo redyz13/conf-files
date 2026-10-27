@@ -3,6 +3,7 @@
 set -euo pipefail
 
 LAPTOP_DPI=110
+LAPTOP_SATURATION=1.35
 MODE="${1:-auto}"
 WALLPAPER_OVERRIDE="${2:-}"
 
@@ -107,6 +108,13 @@ case "$MODE" in
         exit 2
         ;;
 esac
+
+if [[ "$MODE" != "external" &&
+      "$ANCHOR" =~ ^(eDP|LVDS|DSI) ]] &&
+   command -v vibrant-cli >/dev/null 2>&1; then
+    vibrant-cli "$ANCHOR" "$LAPTOP_SATURATION" >/dev/null ||
+        echo "Warning: could not apply display saturation." >&2
+fi
 
 wallpaper="$WALLPAPER_OVERRIDE"
 
