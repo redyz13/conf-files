@@ -663,7 +663,7 @@ pcre2 10.49-1
 pcsclite 2.5.3-1
 perl 5.44.0-1
 perl-curses 1.46-2
-perl-error 0.17030-3
+perl-error 0.17031-1
 perl-mailtools 2.22-3
 perl-term-animation 2.6-14
 perl-timedate 2.35-1
@@ -707,7 +707,7 @@ python-pillow 13.0.0-1
 python-pip 26.2.2-1
 python-pycparser 3.12-1
 python-pydbus 0.6.0-14
-python-pywal16 1:3.8.15-1
+python-pywal 3.3.0-11
 python-six 1.17.0-3
 python-wheel 0.48.0-1
 python-xlib 0.33-7

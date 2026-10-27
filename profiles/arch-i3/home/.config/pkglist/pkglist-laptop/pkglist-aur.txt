@@ -5,7 +5,7 @@ i3lock-color
 notion-app-electron
 pfetch
 phonon-qt6-mpv
-python-pywal16
+python-pywal
 spotify
 tmux-custom
 tmux-custom-debug
