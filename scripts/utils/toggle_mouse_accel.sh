@@ -1,66 +1,100 @@
-#!/bin/bash
 
-MOUSE_NAME="$1"
+#!/usr/bin/env bash
+set -euo pipefail
 
-if [ -z "$MOUSE_NAME" ]; then
-    echo "Usage: $0 \"Exact Mouse Name\""
-    exit 1
-fi
-
-DEVICE_LINE=$(xinput list | awk -v name="$MOUSE_NAME" '
-    /slave[[:space:]]+pointer/ && $0 ~ name && $0 !~ /Keyboard/ {
-        match($0, /↳[[:space:]]+.*[[:space:]]+id=[0-9]+/, m)
-        if (m[0] ~ "↳[[:space:]]+"name"[[:space:]]+id=") print $0
-    }')
-
-DEVICE_ID=$(echo "$DEVICE_LINE" | grep -o 'id=[0-9]*' | cut -d= -f2)
-
-if [ -z "$DEVICE_ID" ]; then
-    echo "Mouse not found: \"$MOUSE_NAME\""
-    exit 1
-fi
-
-PROPERTY_LINE=$(xinput list-props "$DEVICE_ID" | grep -i "libinput Accel Profile Enabled" | grep -v "Default")
-PROPERTY_ID=$(echo "$PROPERTY_LINE" | sed -n 's/.*(\([0-9]\+\)):.*/\1/p')
-VALUES=$(echo "$PROPERTY_LINE" | grep -Eo '[01], [01]' | tr -d ',')
-
-if [ -z "$PROPERTY_ID" ] || [ -z "$VALUES" ]; then
-    echo "Property not found or not supported."
-    exit 1
-fi
-
-CURRENT_FLAT=$(echo "$VALUES" | awk '{print $2}')
+MOUSE_NAME="${1:-}"
+MODE="${2:-toggle}"
 CONFIG_FILE="/etc/X11/xorg.conf.d/90-mouse-accel.conf"
+PROPERTY="libinput Accel Profile Enabled"
 
-CONFIG_FLAT="Section \"InputClass\"
-    Identifier \"Mouse Accel Toggle\"
-    MatchProduct \"$MOUSE_NAME\"
-    Driver \"libinput\"
-    Option \"AccelProfile\" \"flat\"
-EndSection"
+if [[ -z "$MOUSE_NAME" || $# -gt 2 ]]; then
+    echo "Usage: $0 \"Exact Mouse Name\" [flat|adaptive|toggle]"
+    exit 1
+fi
 
-CONFIG_ADAPTIVE="Section \"InputClass\"
-    Identifier \"Mouse Accel Toggle\"
-    MatchProduct \"$MOUSE_NAME\"
-    Driver \"libinput\"
-    Option \"AccelProfile\" \"adaptive\"
-EndSection"
-
-if [ "$CURRENT_FLAT" = "1" ]; then
-    if xinput set-prop "$DEVICE_ID" "$PROPERTY_ID" 1 0; then
-        echo "$CONFIG_ADAPTIVE" | sudo tee "$CONFIG_FILE" > /dev/null
-        echo "Mouse acceleration enabled (adaptive profile, persisted)"
-    else
-        echo "Failed to apply adaptive profile. Config file not written."
+case "$MODE" in
+    flat|adaptive|toggle) ;;
+    *)
+        echo "Invalid mode: $MODE"
         exit 1
-    fi
-else
-    if xinput set-prop "$DEVICE_ID" "$PROPERTY_ID" 0 1; then
-        echo "$CONFIG_FLAT" | sudo tee "$CONFIG_FILE" > /dev/null
-        echo "Mouse acceleration disabled (flat profile, persisted)"
+        ;;
+esac
+
+DEVICE_ID=$(xinput list --id-only "$MOUSE_NAME" 2>/dev/null || true)
+
+if [[ ! "$DEVICE_ID" =~ ^[0-9]+$ ]]; then
+    echo "Mouse not found or ambiguous: $MOUSE_NAME"
+    exit 1
+fi
+
+DEVICE_NAME=$(xinput list --name-only "$DEVICE_ID")
+
+if [[ "$DEVICE_NAME" != "$MOUSE_NAME" ]]; then
+    echo "Mouse name does not match exactly: $DEVICE_NAME"
+    exit 1
+fi
+
+PROPERTY_LINE=$(xinput list-props "$DEVICE_ID" | grep -F "$PROPERTY (" || true)
+
+if [[ -z "$PROPERTY_LINE" ]]; then
+    echo "Acceleration profile not supported."
+    exit 1
+fi
+
+VALUES="${PROPERTY_LINE#*:}"
+read -r -a CURRENT <<< "${VALUES//,/ }"
+
+if [[ ${#CURRENT[@]} -ne 2 && ${#CURRENT[@]} -ne 3 ]]; then
+    echo "Unsupported acceleration profile format."
+    exit 1
+fi
+
+if [[ "$MODE" == "toggle" ]]; then
+    if [[ "${CURRENT[1]}" == "1" ]]; then
+        MODE="adaptive"
     else
-        echo "Failed to apply flat profile. Config file not written."
+        MODE="flat"
+    fi
+fi
+
+if [[ "$MODE" == "flat" ]]; then
+    TARGET=(0 1)
+else
+    TARGET=(1 0)
+fi
+
+if [[ ${#CURRENT[@]} -eq 3 ]]; then
+    TARGET+=(0)
+fi
+
+if sudo test -e "$CONFIG_FILE"; then
+    if ! sudo grep -Fq 'Identifier "Mouse Accel Toggle"' "$CONFIG_FILE"; then
+        echo "Refusing to overwrite an unrelated configuration."
         exit 1
     fi
 fi
+
+TMP_FILE=$(mktemp)
+trap 'rm -f "$TMP_FILE"' EXIT
+
+cat > "$TMP_FILE" <<EOF
+Section "InputClass"
+    Identifier "Mouse Accel Toggle"
+    MatchProduct "$MOUSE_NAME"
+    Driver "libinput"
+    Option "AccelProfile" "$MODE"
+EndSection
+EOF
+
+sudo -v
+
+if ! xinput set-prop "$DEVICE_ID" "$PROPERTY" "${TARGET[@]}"; then
+    echo "Failed to apply acceleration profile."
+    exit 1
+fi
+
+sudo install -m 644 "$TMP_FILE" "$CONFIG_FILE"
+
+echo "Mouse: $MOUSE_NAME"
+echo "Acceleration: $MODE (persisted)"
 
